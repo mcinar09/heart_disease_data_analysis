@@ -1,0 +1,4159 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.523">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Mukadder Cinar, CUNY, The Graduate Center">
+
+<title>Clustering of Patients with Heart Disease</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="new_heart_disease_files/libs/clipboard/clipboard.min.js"></script>
+<script src="new_heart_disease_files/libs/quarto-html/quarto.js"></script>
+<script src="new_heart_disease_files/libs/quarto-html/popper.min.js"></script>
+<script src="new_heart_disease_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="new_heart_disease_files/libs/quarto-html/anchor.min.js"></script>
+<link href="new_heart_disease_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="new_heart_disease_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="new_heart_disease_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="new_heart_disease_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="new_heart_disease_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Clustering of Patients with Heart Disease</h1>
+<p class="subtitle lead">Capstone Project, M.S. in Data Analysis and Visualization</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Mukadder Cinar, CUNY, The Graduate Center </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Cardiovascular Heart Disease (CVD) remains a pervasive global health challenge, contributing significantly to morbidity and mortality rates worldwide <span class="citation" data-cites="cardiova">[@cardiova]</span>. Given its status as a leading cause of death, continuous advancements in research and treatment approaches are essential to address its diverse characteristics effectively. As our comprehension of the variations among individuals with heart disease expands, individualized and precisely targeted treatments have surfaced as a compelling area of exploration in cardiovascular medicine <span class="citation" data-cites="leopold2018">[@leopold2018]</span>.</p>
+<p>In this project, we are analyzing heart disease data obtained from UCI Machine Learning Repository to find patterns and groups in patient information. We’re using several methods to do this:</p>
+<ol type="1">
+<li><p><strong>K-Nearest Neighbors (KNN)</strong>: First, we use KNN, a method that helps us classify patients based on their data. It looks at similar cases in the data and uses them to classify each patient.</p></li>
+<li><p><strong>K-Means Clustering</strong>: Next, we use k-means clustering. This method groups patients into clusters where patients in each cluster are similar to each other. It helps us see if there are common patterns among groups of patients.</p></li>
+<li><p><strong>Visualization of Clusters</strong> by PCA: To visualize the clusters formed by K-means, we employ Principal Component Analysis (PCA). By reducing the dimensionality of the dataset to its first two principal components (PC1 and PC2), we create a two-dimensional representation that captures the majority of the variance within the data. This visualization aids in interpreting the clustering results, offering a clear view of the patient groups in a reduced-dimensional space.</p></li>
+<li><p><strong>Hierarchical Clustering</strong>: Finally, we use hierarchical clustering. This method also groups patients but in a way that shows us a hierarchy, from very broad groups down to more specific ones.</p></li>
+</ol>
+<p>Through this analysis, we aim to provide insightful categorizations of patients based on their heart disease data, offering a potential pathway for personalized medicine and targeted healthcare interventions. This project not only underscores the power of machine learning in healthcare analytics but also highlights the importance of methodical data exploration in deriving meaningful conclusions from complex medical datasets.</p>
+</section>
+<section id="survey-literature" class="level2">
+<h2 class="anchored" data-anchor-id="survey-literature">Survey Literature</h2>
+<p>Recent advancements in cardiovascular health research have been significantly driven by the integration of data-driven methodologies and predictive modeling. Two notable contributions in this field come from the works presented at the <a href="https://pubs.aip.org/aip/acp/article-abstract/2946/1/060010/2920598/IoT-based-heart-disease-prediction-using-smote-and?redirectedFrom=fulltext">Narayanan</a> and the study by Radi et al.</p>
+<p>At the WFCES II 2022, Narayannan <span class="citation" data-cites="narayanan2023">[@narayanan2023]</span> underscored the importance of an integrative approach to understanding cardiovascular health. The focus was on utilizing data-driven methodologies to unravel the complexities of risk factors and their interplay in cardiovascular diseases. Narayannan’s work lays a critical foundation in identifying and analyzing the various risk factors associated with heart conditions. Our project aims to complement Narayannan’s approach by specifically focusing on patient stratification and targeted treatment approaches. By focusing on these specific aspects, we intend to enhance the practical application of data-driven insights in patient care, particularly in customizing treatment plans and preventive strategies based on individual risk profiles.</p>
+<p>In another significant contribution to the field, detailed in their paper available at <a href="http://medrxiv.org/lookup/doi/10.1101/2023.11.11.23298416">medRxiv</a>, Radi et al. <span class="citation" data-cites="radi2023">[@radi2023]</span> delve into the use of predictive modeling to develop early detection strategies for cardiovascular disorders. Their research highlights the potential of predictive models in identifying early signs of cardiovascular diseases, thereby enabling timely intervention. Building upon Radi et al.’s foundational work, our project aims to explore additional variables that might influence cardiovascular risk.</p>
+<p>In addition to the works of Narayannan and Radi et al., a notable contribution to cardiovascular research is found in a recent study published by <a href="https://www.sciencedirect.com/science/article/abs/pii/S1746809423011291?via%3Dihub">Elsevier</a> <span class="citation" data-cites="singh2024">[@singh2024]</span>. This research explores the applications of machine learning in cardiovascular diagnosis and treatment, with a particular focus on enhancing accuracy and improving patient outcomes . This study underscores the pivotal role of machine learning techniques in revolutionizing cardiovascular healthcare by providing more precise diagnostic tools and efficacious treatment plans.</p>
+<p>Our project draws parallels and extends the insights from these existing studies. Like the Elsevier study, we too harness machine learning techniques, albeit with an emphasis on KNN classification and K-means clustering, to refine cardiovascular disease diagnosis and patient stratification. This aligns with the accuracy and outcome-centric approach of the Elsevier study.</p>
+<p>The integrative approach advocated by Narayannan at WFCES II 2022 resonates with our method of combining various machine learning techniques to understand cardiovascular risk factors better. Meanwhile, our effort to explore additional variables and refine existing models for predictive accuracy complements Radi et al.’s work on early detection strategies.</p>
+<p>While each study contributes uniquely to the field, our project serves as a continuation and expansion of these efforts. We build upon Narayannan’s foundational understanding of risk factors, Radi et al.’s predictive modeling for early detection, and the Elsevier study’s application of machine learning for accuracy and enhanced patient outcomes.</p>
+</section>
+<section id="methodology" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
+<p>In this study, we have employed a systematic approach to analyze cardiovascular disease (CVD) data, leveraging a blend of machine learning techniques to unravel the complexities associated with heart disease diagnosis and patient management. Our methodology is structured to not only identify inherent patterns within the dataset but also to enhance the precision and applicability of our findings in clinical settings.</p>
+<p>Initially, we utilized the K-Nearest Neighbors (KNN) classification algorithm, a method renowned for its efficacy in pattern recognition within medical datasets. This was followed by an in-depth analysis using K-means clustering, conducted in two distinct rounds to assess the stability and reliability of the identified clusters. The first round of K-means clustering provided a baseline for patient groupings, while the second round, involving an adjustment in the “nstart” parameter, served to test the consistency of these groupings.</p>
+<p>Further enriching our analysis, Principal Component Analysis (PCA) was implemented to visualize the clusters in a reduced-dimensional space, thereby offering a clearer understanding of the data’s structure. Lastly, hierarchical clustering, executed via both Ward and Complete linkage methods, was applied to explore and validate the data’s inherent groupings at different levels of granularity.</p>
+<p>The comprehensive nature of this methodology, encompassing both classification and clustering techniques, is designed to yield insights that are robust, nuanced, and directly applicable to the improvement of cardiovascular health outcomes.</p>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section"></h3>
+</section>
+<section id="data-collection-and-management" class="level3">
+<h3 class="anchored" data-anchor-id="data-collection-and-management">Data Collection and Management</h3>
+<p>The dataset utilized for this project is sourced from the UCI Machine Learning Repository, specifically from the Heart Disease dataset available at UC Irvine Machine Learning Repository <span class="citation" data-cites="andrasjanosi">[@andrasjanosi]</span>.</p>
+</section>
+<section id="data-overview" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="data-overview">Data Overview</h3>
+<p>The dataset comprises a total of 76 attributes capturing various aspects related to heart health. However, it’s crucial to note that the majority of published experiments have focused on a subset of 14 attributes. Notably, the Cleveland database within this collection has been the primary focus of machine learning researchers. The primary target variable, denoted as the “goal” field, represents the presence of heart disease in patients and is integer-valued, ranging from 0 (no presence) to 4. For this analysis, the target variable named as <code>HeartDisease</code> and converted to binary values as <code>0</code> and <code>1</code>.</p>
+<p><br>
+</p>
+<div class="cell column-page page-columns page-full" data-cap-location="bottom">
+<div id="tbl-original-data-table" class="cell anchored page-columns page-full" data-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure page-columns page-full">
+<div aria-describedby="tbl-original-data-table-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<div class="cell-output-display column-page">
+<div id="evgwlgadih" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#evgwlgadih table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#evgwlgadih thead, #evgwlgadih tbody, #evgwlgadih tfoot, #evgwlgadih tr, #evgwlgadih td, #evgwlgadih th {
+  border-style: none;
+}
+
+#evgwlgadih p {
+  margin: 0;
+  padding: 0;
+}
+
+#evgwlgadih .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#evgwlgadih .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#evgwlgadih .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#evgwlgadih .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#evgwlgadih .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#evgwlgadih .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#evgwlgadih .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#evgwlgadih .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#evgwlgadih .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#evgwlgadih .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#evgwlgadih .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#evgwlgadih .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#evgwlgadih .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#evgwlgadih .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#evgwlgadih .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#evgwlgadih .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#evgwlgadih .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#evgwlgadih .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#evgwlgadih .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#evgwlgadih .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#evgwlgadih .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#evgwlgadih .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#evgwlgadih .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#evgwlgadih .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#evgwlgadih .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#evgwlgadih .gt_left {
+  text-align: left;
+}
+
+#evgwlgadih .gt_center {
+  text-align: center;
+}
+
+#evgwlgadih .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#evgwlgadih .gt_font_normal {
+  font-weight: normal;
+}
+
+#evgwlgadih .gt_font_bold {
+  font-weight: bold;
+}
+
+#evgwlgadih .gt_font_italic {
+  font-style: italic;
+}
+
+#evgwlgadih .gt_super {
+  font-size: 65%;
+}
+
+#evgwlgadih .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#evgwlgadih .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#evgwlgadih .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#evgwlgadih .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#evgwlgadih .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#evgwlgadih .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#evgwlgadih .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="Age" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Age</th>
+<th id="Sex" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Sex</th>
+<th id="ChestPainType" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">ChestPainType</th>
+<th id="RestingBP" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">RestingBP</th>
+<th id="Cholesterol" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Cholesterol</th>
+<th id="FastingBSugar" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">FastingBSugar</th>
+<th id="RestingECG" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">RestingECG</th>
+<th id="MaxHR" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">MaxHR</th>
+<th id="ExerciseAngina" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">ExerciseAngina</th>
+<th id="Oldpeak" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Oldpeak</th>
+<th id="ST_Slope" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">ST_Slope</th>
+<th id="MajorVessels" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">MajorVessels</th>
+<th id="Thalassemia" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Thalassemia</th>
+<th id="HeartDisease" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">HeartDisease</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="Age">63</td>
+<td class="gt_row gt_right" headers="Sex">1</td>
+<td class="gt_row gt_right" headers="ChestPainType">1</td>
+<td class="gt_row gt_right" headers="RestingBP">145</td>
+<td class="gt_row gt_right" headers="Cholesterol">233</td>
+<td class="gt_row gt_right" headers="FastingBSugar">1</td>
+<td class="gt_row gt_right" headers="RestingECG">2</td>
+<td class="gt_row gt_right" headers="MaxHR">150</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">0</td>
+<td class="gt_row gt_right" headers="Oldpeak">2.3</td>
+<td class="gt_row gt_right" headers="ST_Slope">3</td>
+<td class="gt_row gt_right" headers="MajorVessels">0</td>
+<td class="gt_row gt_right" headers="Thalassemia">6</td>
+<td class="gt_row gt_right" headers="HeartDisease">0</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="Age">67</td>
+<td class="gt_row gt_right" headers="Sex">1</td>
+<td class="gt_row gt_right" headers="ChestPainType">4</td>
+<td class="gt_row gt_right" headers="RestingBP">160</td>
+<td class="gt_row gt_right" headers="Cholesterol">286</td>
+<td class="gt_row gt_right" headers="FastingBSugar">0</td>
+<td class="gt_row gt_right" headers="RestingECG">2</td>
+<td class="gt_row gt_right" headers="MaxHR">108</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">1</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.5</td>
+<td class="gt_row gt_right" headers="ST_Slope">2</td>
+<td class="gt_row gt_right" headers="MajorVessels">3</td>
+<td class="gt_row gt_right" headers="Thalassemia">3</td>
+<td class="gt_row gt_right" headers="HeartDisease">1</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="Age">67</td>
+<td class="gt_row gt_right" headers="Sex">1</td>
+<td class="gt_row gt_right" headers="ChestPainType">4</td>
+<td class="gt_row gt_right" headers="RestingBP">120</td>
+<td class="gt_row gt_right" headers="Cholesterol">229</td>
+<td class="gt_row gt_right" headers="FastingBSugar">0</td>
+<td class="gt_row gt_right" headers="RestingECG">2</td>
+<td class="gt_row gt_right" headers="MaxHR">129</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">1</td>
+<td class="gt_row gt_right" headers="Oldpeak">2.6</td>
+<td class="gt_row gt_right" headers="ST_Slope">2</td>
+<td class="gt_row gt_right" headers="MajorVessels">2</td>
+<td class="gt_row gt_right" headers="Thalassemia">7</td>
+<td class="gt_row gt_right" headers="HeartDisease">1</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="Age">37</td>
+<td class="gt_row gt_right" headers="Sex">1</td>
+<td class="gt_row gt_right" headers="ChestPainType">3</td>
+<td class="gt_row gt_right" headers="RestingBP">130</td>
+<td class="gt_row gt_right" headers="Cholesterol">250</td>
+<td class="gt_row gt_right" headers="FastingBSugar">0</td>
+<td class="gt_row gt_right" headers="RestingECG">0</td>
+<td class="gt_row gt_right" headers="MaxHR">187</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">0</td>
+<td class="gt_row gt_right" headers="Oldpeak">3.5</td>
+<td class="gt_row gt_right" headers="ST_Slope">3</td>
+<td class="gt_row gt_right" headers="MajorVessels">0</td>
+<td class="gt_row gt_right" headers="Thalassemia">3</td>
+<td class="gt_row gt_right" headers="HeartDisease">0</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="Age">41</td>
+<td class="gt_row gt_right" headers="Sex">0</td>
+<td class="gt_row gt_right" headers="ChestPainType">2</td>
+<td class="gt_row gt_right" headers="RestingBP">130</td>
+<td class="gt_row gt_right" headers="Cholesterol">204</td>
+<td class="gt_row gt_right" headers="FastingBSugar">0</td>
+<td class="gt_row gt_right" headers="RestingECG">2</td>
+<td class="gt_row gt_right" headers="MaxHR">172</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">0</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.4</td>
+<td class="gt_row gt_right" headers="ST_Slope">1</td>
+<td class="gt_row gt_right" headers="MajorVessels">0</td>
+<td class="gt_row gt_right" headers="Thalassemia">3</td>
+<td class="gt_row gt_right" headers="HeartDisease">0</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="Age">56</td>
+<td class="gt_row gt_right" headers="Sex">1</td>
+<td class="gt_row gt_right" headers="ChestPainType">2</td>
+<td class="gt_row gt_right" headers="RestingBP">120</td>
+<td class="gt_row gt_right" headers="Cholesterol">236</td>
+<td class="gt_row gt_right" headers="FastingBSugar">0</td>
+<td class="gt_row gt_right" headers="RestingECG">0</td>
+<td class="gt_row gt_right" headers="MaxHR">178</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">0</td>
+<td class="gt_row gt_right" headers="Oldpeak">0.8</td>
+<td class="gt_row gt_right" headers="ST_Slope">1</td>
+<td class="gt_row gt_right" headers="MajorVessels">0</td>
+<td class="gt_row gt_right" headers="Thalassemia">3</td>
+<td class="gt_row gt_right" headers="HeartDisease">0</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="Age">62</td>
+<td class="gt_row gt_right" headers="Sex">0</td>
+<td class="gt_row gt_right" headers="ChestPainType">4</td>
+<td class="gt_row gt_right" headers="RestingBP">140</td>
+<td class="gt_row gt_right" headers="Cholesterol">268</td>
+<td class="gt_row gt_right" headers="FastingBSugar">0</td>
+<td class="gt_row gt_right" headers="RestingECG">2</td>
+<td class="gt_row gt_right" headers="MaxHR">160</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">0</td>
+<td class="gt_row gt_right" headers="Oldpeak">3.6</td>
+<td class="gt_row gt_right" headers="ST_Slope">3</td>
+<td class="gt_row gt_right" headers="MajorVessels">2</td>
+<td class="gt_row gt_right" headers="Thalassemia">3</td>
+<td class="gt_row gt_right" headers="HeartDisease">1</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="Age">57</td>
+<td class="gt_row gt_right" headers="Sex">0</td>
+<td class="gt_row gt_right" headers="ChestPainType">4</td>
+<td class="gt_row gt_right" headers="RestingBP">120</td>
+<td class="gt_row gt_right" headers="Cholesterol">354</td>
+<td class="gt_row gt_right" headers="FastingBSugar">0</td>
+<td class="gt_row gt_right" headers="RestingECG">0</td>
+<td class="gt_row gt_right" headers="MaxHR">163</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">1</td>
+<td class="gt_row gt_right" headers="Oldpeak">0.6</td>
+<td class="gt_row gt_right" headers="ST_Slope">1</td>
+<td class="gt_row gt_right" headers="MajorVessels">0</td>
+<td class="gt_row gt_right" headers="Thalassemia">3</td>
+<td class="gt_row gt_right" headers="HeartDisease">0</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="Age">63</td>
+<td class="gt_row gt_right" headers="Sex">1</td>
+<td class="gt_row gt_right" headers="ChestPainType">4</td>
+<td class="gt_row gt_right" headers="RestingBP">130</td>
+<td class="gt_row gt_right" headers="Cholesterol">254</td>
+<td class="gt_row gt_right" headers="FastingBSugar">0</td>
+<td class="gt_row gt_right" headers="RestingECG">2</td>
+<td class="gt_row gt_right" headers="MaxHR">147</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">0</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.4</td>
+<td class="gt_row gt_right" headers="ST_Slope">2</td>
+<td class="gt_row gt_right" headers="MajorVessels">1</td>
+<td class="gt_row gt_right" headers="Thalassemia">7</td>
+<td class="gt_row gt_right" headers="HeartDisease">1</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="Age">53</td>
+<td class="gt_row gt_right" headers="Sex">1</td>
+<td class="gt_row gt_right" headers="ChestPainType">4</td>
+<td class="gt_row gt_right" headers="RestingBP">140</td>
+<td class="gt_row gt_right" headers="Cholesterol">203</td>
+<td class="gt_row gt_right" headers="FastingBSugar">1</td>
+<td class="gt_row gt_right" headers="RestingECG">2</td>
+<td class="gt_row gt_right" headers="MaxHR">155</td>
+<td class="gt_row gt_right" headers="ExerciseAngina">1</td>
+<td class="gt_row gt_right" headers="Oldpeak">3.1</td>
+<td class="gt_row gt_right" headers="ST_Slope">3</td>
+<td class="gt_row gt_right" headers="MajorVessels">0</td>
+<td class="gt_row gt_right" headers="Thalassemia">7</td>
+<td class="gt_row gt_right" headers="HeartDisease">1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-original-data-table-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: View of the Dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="understanding-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="understanding-the-data">Understanding the data</h3>
+<p>The UCI Heart Disease dataset is a comprehensive collection of clinical, demographic, and physiological data for the heart disease patients. The detailed explanation of each variable:</p>
+<p>Age: The patient’s age in years. Age is a crucial factor in heart disease risk, with risk generally increasing with age.</p>
+<p><strong>Sex</strong>: The patient’s biological sex.</p>
+<ul>
+<li>0 = Female</li>
+<li>1 = Male</li>
+</ul>
+<p>Biological sex can influence heart disease risk and symptoms.</p>
+<p><strong>Chest Pain</strong>: The type of chest pain experienced.</p>
+<ul>
+<li><p>1 = Typical Angina - Chest pain related to the heart not getting enough oxygen, usually triggered by physical activity or stress.</p></li>
+<li><p>2 = Atypical Angina - A less common form of chest pain related to heart function.</p></li>
+<li><p>3 = Non-Angina Pain - Chest pain not directly related to the heart.</p></li>
+<li><p>4 = Asymptomatic - No chest pain despite heart disease presence.</p></li>
+</ul>
+<p><strong>RestingBP:</strong> (Resting Blood Pressure): The blood pressure (measured in mm Hg) when the patient is at rest. Blood pressure is the force of blood pushing against blood vessel walls. High resting blood pressure (hypertension) is a risk factor for heart disease.(in mm Hg on admission to the hospital) <span class="citation" data-cites="understa">[@understa]</span>.</p>
+<p><strong>Cholesterol:</strong> (Serum Cholesterol): The amount of cholesterol in the blood (mg/dl). High levels of cholesterol can lead to the buildup of plaques in arteries, increasing heart disease risk.</p>
+<p><strong>FastingBSugar:</strong> (Fasting Blood Sugar ): Indicates if the fasting blood sugar level is higher than 120 mg/dl.</p>
+<ul>
+<li><p>0 = False (Normal)</p></li>
+<li><p>1 = True (High)</p>
+<p>High fasting blood sugar can be a sign of diabetes, a risk factor for heart disease.</p></li>
+</ul>
+<p><strong>RestingECG:</strong> (Resting Electrocardiographic Results): Results from an ECG test, which measures the heart’s electrical activity.</p>
+<ul>
+<li><p>0 = Normal</p></li>
+<li><p>1 = ST-T Wave Abnormality - May indicate heart strain or poor blood supply.</p></li>
+<li><p>2 = Left Ventricular Hypertrophy - Enlargement and thickening of the heart’s main pumping chamber.</p>
+<p>A resting ECG (Electrocardiogram) is a diagnostic tool used to measure the electrical activity of the heart while at rest. It helps in detecting heart conditions by recording the timing and duration of each electrical phase in the heartbeat.</p>
+<p>LVH, or Left Ventricular Hypertrophy, refers to the thickening of the walls of the heart’s left ventricle, often identified through an ECG. It can be indicative of increased stress on the heart or other underlying conditions <span class="citation" data-cites="ogah2008">[@ogah2008]</span>.</p></li>
+</ul>
+<p><strong>MaxHR:</strong> (Maximum Heart Rate Achieved): The highest heart rate achieved during exercise. Lower maximum heart rates can indicate poorer cardiovascular fitness and higher heart disease risk.</p>
+<p><strong>ExerciseAngina:</strong> (Exercise - Induced Angina): Whether chest pain is triggered by physical exertion.</p>
+<ul>
+<li>0 = No</li>
+<li>1 = Yes</li>
+</ul>
+<p>Exercise-induced angina is a condition where physical exertion leads to chest pain or discomfort due to reduced blood flow to the heart muscle. It is a symptom of coronary artery disease, where the heart’s arteries are narrowed or blocked. Indications include chest pain during activity, which usually resolves with rest. Angina can also manifest as discomfort in the arms, neck, jaw, shoulder, or back <span class="citation" data-cites="angina:2014">[@angina:2014]</span>.</p>
+<p><strong>Oldpeak:</strong> (ST Depression Induced by Exercise Relative to Rest): The change in ST segment height on an ECG during exercise compared to rest. The ST segment is a part of the ECG readout, and changes can indicate poor blood flow to the heart <span class="citation" data-cites="burns2020">[@burns2020]</span>.</p>
+<p><strong>ST_Slope:</strong> (The Slope of the Peak Exercise ST Segment): The slope of the ST segment during peak exercise.</p>
+<ul>
+<li>1: Upsloping - May indicate healthier heart function.</li>
+<li>2: Flat - May suggest heart disease.</li>
+<li>3: Downsloping - Often considered a sign of significant heart disease.</li>
+</ul>
+<p><strong>MajorVessels:</strong> (Number of Major Vessels Colored by Fluoroscopy): The number of major blood vessels in the heart (out of a possible 0 to 3) identified with fluoroscopy. Fluoroscopy is an imaging technique that uses X-rays to view internal organs. More vessels with blockages can indicate higher heart disease risk. Fewer visible vessels can indicate heart disease.</p>
+<p><strong>Thalassemia:</strong> A blood disorder that affects hemoglobin, the oxygen-carrying component of blood.</p>
+<ul>
+<li>3: Normal</li>
+<li>6: Fixed Defect - A defect that does not change over time, often indicating a past heart issue.</li>
+<li>7: Reversible Defect - A defect that varies over time, often indicating episodes of poor blood flow.</li>
+</ul>
+<p><strong>HeartDisease</strong> (Diagnosis of Heart Disease): The diagnosis of heart disease, based on angiographic disease status.</p>
+<ul>
+<li>0: Less than 50% diameter narrowing in any major vessel - typically considered no heart disease.</li>
+<li>1-4: More than 50% diameter narrowing - varying degrees of heart disease severity.</li>
+</ul>
+<p>Understanding these variables helps in comprehensively analyzing the dataset to draw meaningful insights related to cardiovascular health.</p>
+<section id="sec-structure-of-the-data-set" class="level4">
+<h4 class="anchored" data-anchor-id="sec-structure-of-the-data-set">Structure of the data set:</h4>
+<div id="tbl-data-structure" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-data-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [303 × 14] (S3: tbl_df/tbl/data.frame)
+ $ Age           : num [1:303] 63 67 67 37 41 56 62 57 63 53 ...
+ $ Sex           : num [1:303] 1 1 1 1 0 1 0 0 1 1 ...
+ $ ChestPainType : num [1:303] 1 4 4 3 2 2 4 4 4 4 ...
+ $ RestingBP     : num [1:303] 145 160 120 130 130 120 140 120 130 140 ...
+ $ Cholesterol   : num [1:303] 233 286 229 250 204 236 268 354 254 203 ...
+ $ FastingBSugar : num [1:303] 1 0 0 0 0 0 0 0 0 1 ...
+ $ RestingECG    : num [1:303] 2 2 2 0 2 0 2 0 2 2 ...
+ $ MaxHR         : num [1:303] 150 108 129 187 172 178 160 163 147 155 ...
+ $ ExerciseAngina: num [1:303] 0 1 1 0 0 0 0 1 0 1 ...
+ $ Oldpeak       : num [1:303] 2.3 1.5 2.6 3.5 1.4 0.8 3.6 0.6 1.4 3.1 ...
+ $ ST_Slope      : num [1:303] 3 2 2 3 1 1 3 1 2 3 ...
+ $ MajorVessels  : num [1:303] 0 3 2 0 0 0 2 0 1 0 ...
+ $ Thalassemia   : num [1:303] 6 3 7 3 3 3 3 3 7 7 ...
+ $ HeartDisease  : num [1:303] 0 1 1 0 0 0 1 0 1 1 ...</code></pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-data-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Structure of the Dataset
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="pre-processing-of-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="pre-processing-of-the-data">Pre-processing of the Data</h3>
+<p>Data pre-processing involves a series of operations aimed at cleaning, transforming, and organizing raw data into a format suitable for analysis. This process significantly impacts the quality and reliability of the insights derived from the data <span class="citation" data-cites="wickham2023">[@wickham2023]</span>.</p>
+<section id="data-cleaning" class="level4">
+<h4 class="anchored" data-anchor-id="data-cleaning">Data Cleaning</h4>
+<p>This step involves handling missing data points, dealing with duplicates, and addressing outliers. Imputing missing values or removing inconsistent entries is essential to maintain data integrity.</p>
+<p>In this dataset, two variables, Thalassemia and Major Vessels have missing values. For categorical variables like these two, a common approach is to impute missing values with the mode (the most frequently occurring value in the column) or to use a more sophisticated method such as predictive imputation <span class="citation" data-cites="imputem2019">[@imputem2019]</span>. Since we don’t have much of missing values, we impute them using the mode. Besides, for the sake of simplicity, I converted the the <code>HeartDisease</code> variable to binary and factored as <code>0</code> = <code>No Disease</code> and <code>1</code> = <code>Disease</code>.</p>
+</section>
+</section>
+<section id="section-1" class="level3">
+<h3 class="anchored" data-anchor-id="section-1"></h3>
+<section id="sec-summary-of-dataset" class="level4">
+<h4 class="anchored" data-anchor-id="sec-summary-of-dataset">Summary of Dataset</h4>
+<p>Statistics of the data variables after imputing the missing values using the variable’s mode value.</p>
+<div id="tbl-summary-data" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-summary-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-stdout">
+<pre><code>      Age             Sex         ChestPainType     RestingBP    
+ Min.   :29.00   Min.   :0.0000   Min.   :1.000   Min.   : 94.0  
+ 1st Qu.:48.00   1st Qu.:0.0000   1st Qu.:3.000   1st Qu.:120.0  
+ Median :56.00   Median :1.0000   Median :3.000   Median :130.0  
+ Mean   :54.44   Mean   :0.6799   Mean   :3.158   Mean   :131.7  
+ 3rd Qu.:61.00   3rd Qu.:1.0000   3rd Qu.:4.000   3rd Qu.:140.0  
+ Max.   :77.00   Max.   :1.0000   Max.   :4.000   Max.   :200.0  
+  Cholesterol    FastingBSugar      RestingECG         MaxHR      
+ Min.   :126.0   Min.   :0.0000   Min.   :0.0000   Min.   : 71.0  
+ 1st Qu.:211.0   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:133.5  
+ Median :241.0   Median :0.0000   Median :1.0000   Median :153.0  
+ Mean   :246.7   Mean   :0.1485   Mean   :0.9901   Mean   :149.6  
+ 3rd Qu.:275.0   3rd Qu.:0.0000   3rd Qu.:2.0000   3rd Qu.:166.0  
+ Max.   :564.0   Max.   :1.0000   Max.   :2.0000   Max.   :202.0  
+ ExerciseAngina      Oldpeak        ST_Slope      MajorVessels   
+ Min.   :0.0000   Min.   :0.00   Min.   :1.000   Min.   :0.0000  
+ 1st Qu.:0.0000   1st Qu.:0.00   1st Qu.:1.000   1st Qu.:0.0000  
+ Median :0.0000   Median :0.80   Median :2.000   Median :0.0000  
+ Mean   :0.3267   Mean   :1.04   Mean   :1.601   Mean   :0.6634  
+ 3rd Qu.:1.0000   3rd Qu.:1.60   3rd Qu.:2.000   3rd Qu.:1.0000  
+ Max.   :1.0000   Max.   :6.20   Max.   :3.000   Max.   :3.0000  
+  Thalassemia    HeartDisease
+ Min.   :3.000   0:164       
+ 1st Qu.:3.000   1:139       
+ Median :3.000               
+ Mean   :4.723               
+ 3rd Qu.:7.000               
+ Max.   :7.000               </code></pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-summary-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Summary of the Data
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="sec-exploratory-data-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="sec-exploratory-data-analysis">Exploratory Data Analysis</h3>
+<p>Exploratory Data Analysis (EDA) is a crucial initial step in the data analysis process. It involves the systematic examination and visualization of data to understand its structure, patterns, and potential insights <span class="citation" data-cites="wickham2023">[@wickham2023]</span>. To understand the dataset, we visualize the variables and examine the distributions.</p>
+<section id="distribution-of-categorical-variables" class="level4">
+<h4 class="anchored" data-anchor-id="distribution-of-categorical-variables">Distribution of Categorical Variables</h4>
+<p>As a part of Exploratory Data Analysis (EDA), we use bar plots to illustrate and get insights of the categorical variables.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-categorical-vars" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-categorical-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-categorical-vars-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-categorical-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The bar plots of Chest Pain, Fasting Blood Pressure, resting ECG, and Exercise-Induced Angina.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot reveals that the majority of patients experience asymptomatic chest pain, indicating no chest pain, while the fewest exhibit symptoms of typical chest pain.<br>
+</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-categorical2-vars" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-categorical2-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-categorical2-vars-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-categorical2-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Bar plots of ST_Slope, Sex, Thalassemia, and Heart Disease.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot highlights that the largest proportion of heart disease patients are male. Additionally, it indicates that the counts of up-slope and flat-slope are quite similar, while the count of down-slope is relatively low.</p>
+</section>
+<section id="distribution-of-numerical-variables" class="level4">
+<h4 class="anchored" data-anchor-id="distribution-of-numerical-variables">Distribution of Numerical Variables</h4>
+<p>The distribution of numerical variables refers to how the values of these variables are spread or scattered across a range. In data analysis, understanding the distribution of numerical variables is crucial for various tasks, such as statistical testing, data modeling, and feature selection.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-numerical-var-distribution" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-numerical-var-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-numerical-var-distribution-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-numerical-var-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Numerical Variables Distribution
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot demonstrates a noticeable increase in the number of patients after the age of 40. Cholesterol levels exhibit some outliers on the higher side. Furthermore, the distribution of resting blood pressure is skewed to the right, whereas the distribution of Maximum heart rate is skewed to the left.</p>
+</section>
+<section id="bivariate-analysis" class="level4">
+<h4 class="anchored" data-anchor-id="bivariate-analysis">Bivariate Analysis</h4>
+<p>Bivariate analysis involves the analysis of two variables simultaneously, to understand the relationship between them. It is a fundamental technique in statistics and data analysis for exploring correlations, associations, and patterns between two different variables <span class="citation" data-cites="rforda">[@rforda]</span>. This analysis can reveal whether there’s a relationship between the two variables and how strong that relationship might be.</p>
+<section id="numerical-variables-vs.-sex" class="level5">
+<h5 class="anchored" data-anchor-id="numerical-variables-vs.-sex">Numerical Variables vs.&nbsp;Sex</h5>
+<p>Displaying the distribution of variables segregated by gender can uncover hidden patterns and yield deeper insights, thereby aiding in more informed decision-making and conclusion formulation.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="new_heart_disease_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="1440"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="categorical-variables-based-on-the-target-variable-heart-disease" class="level5">
+<h5 class="anchored" data-anchor-id="categorical-variables-based-on-the-target-variable-heart-disease">Categorical Variables Based on the Target Variable (Heart Disease)</h5>
+<p>It’s important to examine the distribution of categorical variables in relation to the response variable to gain a better understanding of the data and to provide insights for further analysis.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-cpTarget-slopeTarget" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cpTarget-slopeTarget-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-cpTarget-slopeTarget-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cpTarget-slopeTarget-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Distribution of chest pain types and ST slope based on the target variable.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot highlights a notably higher rate of heart disease in patients experiencing asymptomatic chest pain. Regarding the ST Slope in relation to the presence of Heart Disease, it’s evident that when the ST slope is flat, the likelihood of the disease is substantially higher (no disease: disease = 16%: 30%), whereas approximately 10% of patients with the up-slope exhibit the disease.</p>
+<div style="page-break-after: always;"></div>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-rECGTarget-thalTarget" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rECGTarget-thalTarget-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-rECGTarget-thalTarget-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rECGTarget-thalTarget-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Distribution of Resting ECG and Thalassemia vs.&nbsp;the target variable.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot suggests that if the resting ECG shows signs of LVH (Left Ventricular Hypertrophy, which involves the enlargement and thickening of the heart’s main pumping chamber), the likelihood of the disease is slightly elevated. Conversely, when the heart rhythm is normal, the probability of the disease is lower (approximately 31% without the disease and 18% with the disease).</p>
+<p>Thalassemia is a hereditary blood disorder passed from parents to children, characterized by insufficient production of hemoglobin (red blood cells) <span class="citation" data-cites="cdc2020">[@cdc2020]</span>. When we examine the plot of Thalassemia against Heart disease, it becomes evident that individuals with normal thalassemia levels have a reduced likelihood of the disease. Conversely, for patients with the thalassemia type of reversible defect, a higher proportion have the disease (approximately 10% without the disease and 30% with the disease).</p>
+</section>
+</section>
+<section id="section-2" class="level4">
+<h4 class="anchored" data-anchor-id="section-2"></h4>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-sex-fbs-exang-target" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sex-fbs-exang-target-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-sex-fbs-exang-target-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sex-fbs-exang-target-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Distribution of sex and exercise-induced angina based on heart disease.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot depicting Sex versus Heart Disease reveals that the likelihood of the disease is greater in males (approximately 30% without the disease and 37% with the disease), whereas in females, it is considerably lower (approximately 24% without the disease and 8% with the disease).</p>
+<p>Regarding fasting blood sugar, a level below 120 mg/dl is considered normal. The graph illustrates that when fasting blood sugar levels are elevated, the proportion of individuals with and without the disease is roughly equal.</p>
+<section id="numerical-variables-pairwise-distribution" class="level5">
+<h5 class="anchored" data-anchor-id="numerical-variables-pairwise-distribution">Numerical Variables Pairwise Distribution</h5>
+<p>To understand the variation between numerical variables, we look at the Pearson Correlation coefficients.</p>
+<p><strong>The Pearson correlation coefficient</strong> is a measure of the linear correlation between two variables X and Y. It has a value between <code>+1</code> and <code>-1</code>, where <code>1</code> is total positive linear correlation, <code>0</code> is no linear correlation, and <code>-1</code> is total negative linear correlation. The formula to calculate the Pearson correlation coefficient, denoted as <span class="math inline">\(r\)</span>, is:</p>
+<p><span class="math display">\[ r = \frac{n(\sum xy) - (\sum x)(\sum y)}{\sqrt{[n\sum x^2 - (\sum x)^2][n\sum y^2 - (\sum y)^2]}}​ \]</span></p>
+<p>Where:</p>
+<p><span class="math inline">\(n\)</span> is the number of pairs of scores.</p>
+<ul>
+<li><span class="math inline">\(\sum{xy}\)</span> is the sum of the product of paired scores.</li>
+<li><span class="math inline">\(\sum{x}\)</span> and <span class="math inline">\(\sum{y}\)</span> are the sums of the x scores and y scores respectively.</li>
+<li><span class="math inline">\(\sum{x^2}\)</span> and <span class="math inline">\(\sum{y^2}\)</span> are the sums of the squared x scores and squared y scores respectively.</li>
+</ul>
+<p>This formula essentially measures how much two variables change together, compared to how much they vary individually. It’s important to note that Pearson’s correlation only assesses linear relationships and is sensitive to outliers. If the relationship is not linear or the data contains outliers, Pearson’s correlation might not be the appropriate measure of association.</p>
+<p>A Pearson Correlation heat-map is a graphical representation of the Pearson correlation coefficients between pairs of variables in a given dataset. In the heat-map, each cell represents the correlation coefficient between two variables. The variables are usually displayed on both the <code>x</code> and <code>y</code> axes, forming a matrix. The color of each cell indicates the strength and direction of the correlation: typically, a color gradient is used where one extreme (e.g., dark red) represents a high positive correlation <code>(+1)</code>, the opposite extreme (e.g., dark blue) represents a high negative correlation <code>(-1)</code>, and a neutral color (e.g., white or light grey) indicates no correlation <code>(0)</code>.</p>
+<p>It is an effective tool for quickly visualizing and identifying relationships between multiple variables, often used in exploratory data analysis to detect potential areas of interest for further analysis or to check assumptions in data modeling and machine learning.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-corr-heatmap" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-corr-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-corr-heatmap-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Pearson correlation coefficients between the numerical variables.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="classification-k-nearest-neighbors-knn-machine-learning-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="classification-k-nearest-neighbors-knn-machine-learning-algorithm">Classification: K-Nearest Neighbors (KNN) Machine Learning Algorithm</h2>
+<p>The k-Nearest Neighbors (k-NN) algorithm is a straightforward and widely used classification method. It operates on a simple principle: objects with similar features are likely to belong to the same class. This is based on the assumption that similar things exist in close proximity <span class="citation" data-cites="classifi">[@classifi]</span>.</p>
+<p><strong>Classification Process</strong>:</p>
+<ul>
+<li>When a new instance needs to be classified, the algorithm looks for the k closest labeled data points – the k-nearest neighbors.</li>
+<li>The algorithm calculates the distance (such as Euclidean distance) between the new instance and every other instance in the training set.</li>
+<li>It then selects the k closest instances, where k is a user-defined constant.</li>
+<li>The classification of the new instance is determined by a majority vote of its neighbors, with the new instance being assigned to the class most common among its k nearest neighbors.</li>
+</ul>
+<p>The choice of k is crucial. A small value of k means that noise will have a higher influence on the result, while a large value makes the computation costly and may result in considering points that are too far away. The optimal k value is usually determined empirically via cross-validation <span class="citation" data-cites="datasci">[@datasci]</span>.</p>
+<p><strong>Features of k-NN</strong>:</p>
+<ul>
+<li>k-NN is a non-parametric and lazy learning algorithm.</li>
+<li>It is simple to understand and easy to implement.</li>
+<li>k-NN can be used for both classification and regression tasks.</li>
+</ul>
+<p><strong>Applications</strong>:</p>
+<ul>
+<li>It is widely used in real-life scenarios such as finance (for credit scoring), healthcare (for medical diagnosis), education, recommendation systems, and more. The algorithm gets significantly slower as the number of examples and/or predictors/independent variables increase <span class="citation" data-cites="classifi">[@classifi]</span>.</li>
+</ul>
+<p>To perform the K-NN classification algrithm, I factor the the responsevariable <code>HeartDisease</code> because its class was numerical as other variables.</p>
+<p>I recheck for the missing values. There’s no missing values because that was handled in the pre-processing section.</p>
+<p>Then, I scale the data using the <code>scale()</code> function from the <code>caret</code> package .</p>
+<div class="cell" data-tbl-cap-location="bottom">
+<div id="tbl-scaled" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-scaled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="fyhyxdaltu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fyhyxdaltu table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#fyhyxdaltu thead, #fyhyxdaltu tbody, #fyhyxdaltu tfoot, #fyhyxdaltu tr, #fyhyxdaltu td, #fyhyxdaltu th {
+  border-style: none;
+}
+
+#fyhyxdaltu p {
+  margin: 0;
+  padding: 0;
+}
+
+#fyhyxdaltu .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#fyhyxdaltu .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#fyhyxdaltu .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#fyhyxdaltu .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#fyhyxdaltu .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#fyhyxdaltu .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#fyhyxdaltu .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#fyhyxdaltu .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#fyhyxdaltu .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#fyhyxdaltu .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#fyhyxdaltu .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#fyhyxdaltu .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#fyhyxdaltu .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#fyhyxdaltu .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#fyhyxdaltu .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fyhyxdaltu .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#fyhyxdaltu .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#fyhyxdaltu .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#fyhyxdaltu .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fyhyxdaltu .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#fyhyxdaltu .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fyhyxdaltu .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#fyhyxdaltu .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fyhyxdaltu .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fyhyxdaltu .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fyhyxdaltu .gt_left {
+  text-align: left;
+}
+
+#fyhyxdaltu .gt_center {
+  text-align: center;
+}
+
+#fyhyxdaltu .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#fyhyxdaltu .gt_font_normal {
+  font-weight: normal;
+}
+
+#fyhyxdaltu .gt_font_bold {
+  font-weight: bold;
+}
+
+#fyhyxdaltu .gt_font_italic {
+  font-style: italic;
+}
+
+#fyhyxdaltu .gt_super {
+  font-size: 65%;
+}
+
+#fyhyxdaltu .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#fyhyxdaltu .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#fyhyxdaltu .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#fyhyxdaltu .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#fyhyxdaltu .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#fyhyxdaltu .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#fyhyxdaltu .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="Age" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Age</th>
+<th id="Sex" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Sex</th>
+<th id="ChestPainType" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">ChestPainType</th>
+<th id="RestingBP" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">RestingBP</th>
+<th id="Cholesterol" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Cholesterol</th>
+<th id="FastingBSugar" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">FastingBSugar</th>
+<th id="RestingECG" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">RestingECG</th>
+<th id="MaxHR" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">MaxHR</th>
+<th id="ExerciseAngina" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">ExerciseAngina</th>
+<th id="Oldpeak" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Oldpeak</th>
+<th id="ST_Slope" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">ST_Slope</th>
+<th id="MajorVessels" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">MajorVessels</th>
+<th id="Thalassemia" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Thalassemia</th>
+<th id="HeartDisease" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">HeartDisease</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_center" headers="Age">0.9471596</td>
+<td class="gt_row gt_center" headers="Sex">0.6850692</td>
+<td class="gt_row gt_center" headers="ChestPainType">-2.2480557</td>
+<td class="gt_row gt_center" headers="RestingBP">0.75627397</td>
+<td class="gt_row gt_center" headers="Cholesterol">-0.26446281</td>
+<td class="gt_row gt_center" headers="FastingBSugar">2.3904835</td>
+<td class="gt_row gt_center" headers="RestingECG">1.0150052</td>
+<td class="gt_row gt_center" headers="MaxHR">0.01716893</td>
+<td class="gt_row gt_center" headers="ExerciseAngina">-0.69548</td>
+<td class="gt_row gt_center" headers="Oldpeak">1.0855423</td>
+<td class="gt_row gt_center" headers="ST_Slope">2.2708221</td>
+<td class="gt_row gt_center" headers="MajorVessels">-0.7099569</td>
+<td class="gt_row gt_center" headers="Thalassemia">0.6589141</td>
+<td class="gt_row gt_center" headers="HeartDisease">No</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Age">1.3897030</td>
+<td class="gt_row gt_center" headers="Sex">0.6850692</td>
+<td class="gt_row gt_center" headers="ChestPainType">0.8765355</td>
+<td class="gt_row gt_center" headers="RestingBP">1.60855891</td>
+<td class="gt_row gt_center" headers="Cholesterol">0.75915934</td>
+<td class="gt_row gt_center" headers="FastingBSugar">-0.4169448</td>
+<td class="gt_row gt_center" headers="RestingECG">1.0150052</td>
+<td class="gt_row gt_center" headers="MaxHR">-1.81889638</td>
+<td class="gt_row gt_center" headers="ExerciseAngina">1.43311</td>
+<td class="gt_row gt_center" headers="Oldpeak">0.3965257</td>
+<td class="gt_row gt_center" headers="ST_Slope">0.6480412</td>
+<td class="gt_row gt_center" headers="MajorVessels">2.5007438</td>
+<td class="gt_row gt_center" headers="Thalassemia">-0.8887679</td>
+<td class="gt_row gt_center" headers="HeartDisease">Yes</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Age">1.3897030</td>
+<td class="gt_row gt_center" headers="Sex">0.6850692</td>
+<td class="gt_row gt_center" headers="ChestPainType">0.8765355</td>
+<td class="gt_row gt_center" headers="RestingBP">-0.66420094</td>
+<td class="gt_row gt_center" headers="Cholesterol">-0.34171732</td>
+<td class="gt_row gt_center" headers="FastingBSugar">-0.4169448</td>
+<td class="gt_row gt_center" headers="RestingECG">1.0150052</td>
+<td class="gt_row gt_center" headers="MaxHR">-0.90086373</td>
+<td class="gt_row gt_center" headers="ExerciseAngina">1.43311</td>
+<td class="gt_row gt_center" headers="Oldpeak">1.3439235</td>
+<td class="gt_row gt_center" headers="ST_Slope">0.6480412</td>
+<td class="gt_row gt_center" headers="MajorVessels">1.4305102</td>
+<td class="gt_row gt_center" headers="Thalassemia">1.1748081</td>
+<td class="gt_row gt_center" headers="HeartDisease">Yes</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Age">-1.9293722</td>
+<td class="gt_row gt_center" headers="Sex">0.6850692</td>
+<td class="gt_row gt_center" headers="ChestPainType">-0.1649949</td>
+<td class="gt_row gt_center" headers="RestingBP">-0.09601098</td>
+<td class="gt_row gt_center" headers="Cholesterol">0.06386882</td>
+<td class="gt_row gt_center" headers="FastingBSugar">-0.4169448</td>
+<td class="gt_row gt_center" headers="RestingECG">-0.9951031</td>
+<td class="gt_row gt_center" headers="MaxHR">1.63465503</td>
+<td class="gt_row gt_center" headers="ExerciseAngina">-0.69548</td>
+<td class="gt_row gt_center" headers="Oldpeak">2.1190672</td>
+<td class="gt_row gt_center" headers="ST_Slope">2.2708221</td>
+<td class="gt_row gt_center" headers="MajorVessels">-0.7099569</td>
+<td class="gt_row gt_center" headers="Thalassemia">-0.8887679</td>
+<td class="gt_row gt_center" headers="HeartDisease">No</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Age">-1.4868288</td>
+<td class="gt_row gt_center" headers="Sex">-1.4548891</td>
+<td class="gt_row gt_center" headers="ChestPainType">-1.2065253</td>
+<td class="gt_row gt_center" headers="RestingBP">-0.09601098</td>
+<td class="gt_row gt_center" headers="Cholesterol">-0.82455796</td>
+<td class="gt_row gt_center" headers="FastingBSugar">-0.4169448</td>
+<td class="gt_row gt_center" headers="RestingECG">1.0150052</td>
+<td class="gt_row gt_center" headers="MaxHR">0.97891742</td>
+<td class="gt_row gt_center" headers="ExerciseAngina">-0.69548</td>
+<td class="gt_row gt_center" headers="Oldpeak">0.3103986</td>
+<td class="gt_row gt_center" headers="ST_Slope">-0.9747397</td>
+<td class="gt_row gt_center" headers="MajorVessels">-0.7099569</td>
+<td class="gt_row gt_center" headers="Thalassemia">-0.8887679</td>
+<td class="gt_row gt_center" headers="HeartDisease">No</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Age">0.1727088</td>
+<td class="gt_row gt_center" headers="Sex">0.6850692</td>
+<td class="gt_row gt_center" headers="ChestPainType">-1.2065253</td>
+<td class="gt_row gt_center" headers="RestingBP">-0.66420094</td>
+<td class="gt_row gt_center" headers="Cholesterol">-0.20652194</td>
+<td class="gt_row gt_center" headers="FastingBSugar">-0.4169448</td>
+<td class="gt_row gt_center" headers="RestingECG">-0.9951031</td>
+<td class="gt_row gt_center" headers="MaxHR">1.24121247</td>
+<td class="gt_row gt_center" headers="ExerciseAngina">-0.69548</td>
+<td class="gt_row gt_center" headers="Oldpeak">-0.2063639</td>
+<td class="gt_row gt_center" headers="ST_Slope">-0.9747397</td>
+<td class="gt_row gt_center" headers="MajorVessels">-0.7099569</td>
+<td class="gt_row gt_center" headers="Thalassemia">-0.8887679</td>
+<td class="gt_row gt_center" headers="HeartDisease">No</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-scaled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: View of the scaled data by normalizing each variable.
+</figcaption>
+</figure>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+<section id="create-the-k-nn-model-k5" class="level4">
+<h4 class="anchored" data-anchor-id="create-the-k-nn-model-k5">Create the k-NN model: k=5</h4>
+<div id="tbl-classification-confusion" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-classification-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-stdout">
+<pre><code>         Actual
+Predicted No Yes
+      No  43   8
+      Yes  6  33</code></pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-classification-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Confusin matrix obtained from KNN model
+</figcaption>
+</figure>
+</div>
+<p>Evaluation of the Model</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "The accuracy of the model is: 84.44"</code></pre>
+</div>
+</div>
+<p>Visualize the results</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-knn-modelpred-vs-actual" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-knn-modelpred-vs-actual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-knn-modelpred-vs-actual-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-knn-modelpred-vs-actual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Classification of patients using the K-Nearest Neighbor algorithm.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="model-tuning" class="level3">
+<h3 class="anchored" data-anchor-id="model-tuning">Model Tuning</h3>
+<p>Model tuning refers to the process of adjusting the parameters of a machine learning model to improve its performance or make it better suited to the data it is working with <span class="citation" data-cites="datascia">[@datascia]</span>.</p>
+<p>In KNN, the choice of the k-value (the number of nearest neighbors to consider) is a critical parameter that can significantly influence the model’s performance. The key aspects of tuning the k-value in KNN are:</p>
+<ol type="1">
+<li><p><strong>Balance Between Overfitting and Underfitting</strong>: A very small k-value can make the model sensitive to noise in the data, leading to overfitting. Conversely, a very large k-value can smooth out the predictions too much, leading to underfitting <span class="citation" data-cites="lee">[@lee]</span>.</p></li>
+<li><p><strong>Validation Approach</strong>: Typically, the best k-value is found through validation techniques like cross-validation, where the model’s performance is tested on different subsets of the data for a range of k-values.</p>
+<ul>
+<li><strong>Cross-Validation</strong>: Use k-fold cross-validation to evaluate the performance of the KNN model for different values of k. This involves splitting the training dataset into k smaller sets (or folds), then training the model k times, each time using a different fold as the validation set and the remaining data as the training set [<span class="citation" data-cites="leea">@leea</span>].</li>
+</ul></li>
+</ol>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>k-Nearest Neighbors 
+
+213 samples
+ 13 predictor
+  2 classes: 'No', 'Yes' 
+
+No pre-processing
+Resampling: Cross-Validated (10 fold) 
+Summary of sample sizes: 191, 191, 192, 193, 191, 192, ... 
+Resampling results across tuning parameters:
+
+  k   Accuracy   Kappa    
+   1  0.7649567  0.5234296
+   2  0.7890043  0.5729102
+   3  0.8114935  0.6174143
+   4  0.8258009  0.6452885
+   5  0.8169264  0.6253310
+   6  0.8114719  0.6160883
+   7  0.8219264  0.6365059
+   8  0.8269481  0.6490313
+   9  0.8310173  0.6530735
+  10  0.8357792  0.6627062
+  11  0.8403247  0.6725589
+  12  0.8409957  0.6752081
+  13  0.8643939  0.7220932
+  14  0.8596320  0.7111636
+  15  0.8548701  0.7017160
+  16  0.8637229  0.7192471
+  17  0.8585065  0.7084796
+  18  0.8539610  0.6988101
+  19  0.8589610  0.7100729
+  20  0.8446537  0.6798353
+
+Accuracy was used to select the optimal model using the largest value.
+The final value used for the model was k = 13.</code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation-of-the-result" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-the-result"><strong>Interpretation of the Result:</strong></h3>
+<p><strong>Optimal k-Value</strong>: The model tuning process identified that <strong><code>k = 13</code></strong> as the optimal number of neighbors for the KNN algorithm. This means that when making a prediction for a new data point, the algorithm considers the <code>13</code> nearest data points in the training set and bases its prediction on these.</p>
+<p><strong>Accuracy</strong>: The choice of <strong><code>k = 13</code></strong> was based on achieving the highest accuracy. Accuracy is a measure of how often the model correctly predicts the target variable. A high accuracy with this k-value suggests that the model is generally effective in classifying the data correctly.</p>
+<p><strong>Kappa Statistic</strong>: A Kappa of <code>0.722</code> is relatively high, suggesting good agreement between the model predictions and the actual values. In the context of Kappa, where <code>1</code> is perfect agreement and <code>0</code> is no better than chance, a value of <code>0.722</code> indicates that the model’s predictions are substantially in agreement with the actual values, and much of this agreement is not due to chance.</p>
+</section>
+<section id="k-means-clustering" class="level3">
+<h3 class="anchored" data-anchor-id="k-means-clustering">K-Means Clustering</h3>
+<p><br>
+K-means clustering is a popular unsupervised machine learning algorithm used for partitioning a dataset into a set of distinct, non-overlapping subgroups or clusters. We employ the K-means clustering algorithm in the heart disease dataset to uncover hidden groupings or clusters among the data points. By identifying these clusters, we can gain insights into potential subpopulations of patients who share similar characteristics. This unsupervised machine learning method allows us to better understand the dataset’s inherent structure and may help in tailoring treatments or interventions for specific patient groups.</p>
+<p>The algorithm aims to partition the data such that the variance within each cluster is minimized <span class="citation" data-cites="k-means">[@k-means]</span>.</p>
+<p><strong>Algorithm Steps</strong>:</p>
+<ul>
+<li><strong>Initialization</strong>: Start by randomly selecting k centroids, where k is the desired number of clusters.</li>
+<li><strong>Assignment Step</strong>: Assign each data point to the nearest centroid, creating clusters.</li>
+<li><strong>Update Step</strong>: Recalculate the centroids as the mean of all data points in each cluster.</li>
+<li><strong>Repeat</strong>: Repeat the assignment and update steps until the centroids no longer change significantly, indicating that the clusters are stable <span class="citation" data-cites="k-means">[@k-means]</span>.</li>
+</ul>
+<p><strong>Choosing k</strong>: The number of clusters, k, is a user-defined parameter and can be determined using various methods, such as the Elbow Method, Silhouette Analysis, or domain knowledge.</p>
+<p>K-means clustering is commonly used for market segmentation, pattern recognition, image compression, and similar applications where data needs to be grouped. <span class="citation" data-cites="k-means">[@k-means]</span></p>
+</section>
+<section id="selecting-the-optimal-number-of-clusters-k" class="level3">
+<h3 class="anchored" data-anchor-id="selecting-the-optimal-number-of-clusters-k">Selecting the Optimal Number of Clusters (k)</h3>
+<p>Selecting the optimal number of clusters (k) in k-means clustering is a crucial step, and one common method to determine this is by using the “Elbow Method”, often visualized through a scree plot. The Elbow Method involves running k-means clustering on the dataset for a range of values of k (for example, <code>k</code> from <code>1</code> to <code>10</code>), and then for each value of <code>k</code> calculating the sum of squared distances from each point to its assigned center. When these overall dispersions are plotted against the number of clusters, the “elbow” of the curve represents an optimal value for k <span class="citation" data-cites="datasci">[@datasci]</span>.</p>
+<p>The within-cluster sum of squares (WSS), also known as the “within-cluster variance” or “inertia,” is a measure used to evaluate the quality of clustering in the k-means algorithm. It quantifies the compactness or tightness of clusters. The formula for WSS is as follows:</p>
+<p>For a given cluster k, the WSS is calculated as the sum of the squared Euclidean distances between each data point (<span class="math inline">\(x_i\)</span>) in the cluster and the centroid (<span class="math inline">\(c_i\)</span>) of that cluster. This is done for all data points within the cluster:</p>
+<p><span class="math display">\[WSS_k = \sum_{i = 1}^{n_k}(x_i -c_i)^2\]</span> Where:</p>
+<ul>
+<li><span class="math inline">\(WSS_k\)</span> is the within-cluster sum of squares for cluster k.</li>
+<li><span class="math inline">\(n_k\)</span> is the number of data points in cluster k.</li>
+<li><span class="math inline">\(x_i\)</span> represents each data point in cluster k.</li>
+<li><span class="math inline">\(c_i\)</span> is the centroid (mean) of cluster k.</li>
+</ul>
+<p>To obtain the total WSS for a k-means clustering with ‘k’ clusters, sum the WSS values for all clusters: The total WSS:</p>
+<p><span class="math display">\[ Total WSS = \sum_{k = 1}^{K}WSS_k \]</span></p>
+<p>Plot these Within-cluster Sum of Square values against the number of clusters k.The point where the plot starts to bend and forms an “elbow” is considered as an indicator of the appropriate number of clusters <span class="citation" data-cites="datascic">[@datascic]</span>.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-scree-plot" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scree-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-scree-plot-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scree-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Scree plot to find the optimal k-value.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The scree plot indicates that the optimal k-value is two. However, it seems like three would be the right as well. To confirm the right k-value, we use alternative method the <strong>Average Silhouette</strong> method. It is used to determine the optimal number of clusters (k) in unsupervised clustering, such as K-means. It measures how similar data points are to their own cluster compared to other clusters. Higher scores indicate better-defined clusters, and the k with the highest average score is chosen as the optimal number of clusters <span class="citation" data-cites="kassambara">[@kassambara]</span>.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-Silhouette-method-plot" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-Silhouette-method-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-Silhouette-method-plot-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Silhouette-method-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Silhouette method plot to determine the optimal k-value.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We choose the optimal k-value <span class="math inline">\(2\)</span> after performing the Elbow and the average Silhouette methods.</p>
+<p>K-means is a method used to group data, like patient information, into clusters. This method starts by randomly choosing points in the data to form the initial clusters, which means every time we run k-means, we might get different clusters <span class="citation" data-cites="k-meansc">[@k-meansc]</span>.</p>
+<p>For our heart disease data, it’s important that the clusters are not just random groupings. We want to see if similar patients are grouped together consistently, even when we start the k-means algorithm from different points. If the same patients end up in different clusters each time, it might mean that the clusters don’t really tell us anything meaningful about the patients. For this reason we run the algorithm twice.</p>
+</section>
+<section id="section-3" class="level3">
+<h3 class="anchored" data-anchor-id="section-3"></h3>
+<p>We perform k-means clustering twice on the heart disease data by changing the <code>nstart</code> value in the second round which refers to the number of random initialization of centers. The k-means algorithm is sensitive to the initial placement of the centroids <span class="citation" data-cites="k-means">[@k-means]</span>. To mitigate this, <code>nstart</code> specifies how many times the algorithm should be run with different random initialization. The best output in terms of within-cluster sum of squares is kept. This helps in finding a more robust clustering solution. By comparing the results of this second round with our first round, we can check if the groups of patients are similar. This helps us understand if our clustering really makes sense.</p>
+<section id="sec-interpreting-the-k-means-clustering-results" class="level4">
+<h4 class="anchored" data-anchor-id="sec-interpreting-the-k-means-clustering-results"><strong>The K-Means Clustering Results</strong></h4>
+<ol type="1">
+<li><strong>Cluster Sizes in Each Round</strong>:</li>
+</ol>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th>Cluster 1</th>
+<th>Cluster 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Round1</td>
+<td>114</td>
+<td>189</td>
+</tr>
+<tr class="even">
+<td>Round2</td>
+<td>111</td>
+<td>192</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="consistency-of-clusters" class="level4">
+<h4 class="anchored" data-anchor-id="consistency-of-clusters"><strong>Consistency of Clusters</strong>:</h4>
+<ul>
+<li><p>To determine if the same patients are grouped together in both rounds, the cluster assignments of individual patients across the two rounds would be compared.</p></li>
+<li><p>This can be done by checking how many patients in each cluster from Round 1 are also in the same or different clusters in Round 2.</p></li>
+</ul>
+</section>
+<section id="checking-cluster-consistency" class="level4">
+<h4 class="anchored" data-anchor-id="checking-cluster-consistency"><strong>Checking Cluster Consistency :</strong></h4>
+<div id="tbl-cluster-consistency-checking-table" class="cell anchored" data-tbl-cap-location="top">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cluster-consistency-checking-table-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: The contingency table to compare the cluster assignments.
+</figcaption>
+<div aria-describedby="tbl-cluster-consistency-checking-table-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+
+</div>
+</figure>
+</div>
+<table class="table">
+<tbody>
+<tr class="odd">
+<td>Round 1</td>
+<td>Round 2</td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td>Cluster 1</td>
+<td>Cluster 2</td>
+</tr>
+<tr class="odd">
+<td>Cluster 1</td>
+<td><strong>51</strong></td>
+<td>67</td>
+</tr>
+<tr class="even">
+<td>Cluster 2</td>
+<td>60</td>
+<td><strong>125</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the Contingency Table:</strong></p>
+<ul>
+<li>If many patients from a cluster in Round 1 are in the same cluster in Round 2, this suggests consistency.</li>
+<li>If patients from a cluster in Round 1 are spread across different clusters in Round 2, this suggests inconsistency.</li>
+</ul>
+<p><strong>Diagonal Cells in the Contingency Table:</strong></p>
+<p>Each diagonal cell in the contingency table represents the number of data points (patients in your case) that were in the same cluster in both rounds of clustering. For example, the cell at the intersection of Cluster 1 in Round 1 and Cluster 1 in Round 2 shows how many patients remained in Cluster 1 across both rounds.</p>
+<p>If the diagonal cells have high counts compared to the off-diagonal cells, this suggests a high level of consistency. It means that a significant number of patients were grouped into the same cluster in both rounds of clustering.</p>
+<p>Conversely, if the off-diagonal cells have higher counts than the diagonal cells, it indicates that many patients shifted to different clusters in the second round, suggesting variability or instability in the clustering.</p>
+<p>Conclusion for K-Means Clustering</p>
+<p>In the presented contingency table, the diagonal values (51, 125) represent lower counts compared to the off-diagonal ones. Although 125 instances were retained in cluster 2 during the second round, the high count of diagonal (displaced) values suggests that K-Means clustering may not be effective or robust for this dataset, given its lack of consistent results.</p>
+</section>
+<section id="clustering-statistics" class="level4">
+<h4 class="anchored" data-anchor-id="clustering-statistics">Clustering Statistics</h4>
+<p>After performing k-means clustering, calculating statistics for each cluster is crucial for interpretation. This typically involves looking at the mean, median or standard deviation values of key variables within each cluster.</p>
+<p>Statistics for Round 1 Clustering:</p>
+<div class="cell" data-tbl-cap-location="bottom">
+<div id="tbl-round1-statistics" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-round1-statistics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="xuwkdlnsyg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#xuwkdlnsyg table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#xuwkdlnsyg thead, #xuwkdlnsyg tbody, #xuwkdlnsyg tfoot, #xuwkdlnsyg tr, #xuwkdlnsyg td, #xuwkdlnsyg th {
+  border-style: none;
+}
+
+#xuwkdlnsyg p {
+  margin: 0;
+  padding: 0;
+}
+
+#xuwkdlnsyg .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#xuwkdlnsyg .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#xuwkdlnsyg .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#xuwkdlnsyg .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#xuwkdlnsyg .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#xuwkdlnsyg .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#xuwkdlnsyg .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#xuwkdlnsyg .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#xuwkdlnsyg .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#xuwkdlnsyg .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#xuwkdlnsyg .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#xuwkdlnsyg .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#xuwkdlnsyg .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#xuwkdlnsyg .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#xuwkdlnsyg .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xuwkdlnsyg .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#xuwkdlnsyg .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#xuwkdlnsyg .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#xuwkdlnsyg .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xuwkdlnsyg .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#xuwkdlnsyg .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xuwkdlnsyg .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#xuwkdlnsyg .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xuwkdlnsyg .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xuwkdlnsyg .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xuwkdlnsyg .gt_left {
+  text-align: left;
+}
+
+#xuwkdlnsyg .gt_center {
+  text-align: center;
+}
+
+#xuwkdlnsyg .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#xuwkdlnsyg .gt_font_normal {
+  font-weight: normal;
+}
+
+#xuwkdlnsyg .gt_font_bold {
+  font-weight: bold;
+}
+
+#xuwkdlnsyg .gt_font_italic {
+  font-style: italic;
+}
+
+#xuwkdlnsyg .gt_super {
+  font-size: 65%;
+}
+
+#xuwkdlnsyg .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#xuwkdlnsyg .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#xuwkdlnsyg .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#xuwkdlnsyg .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#xuwkdlnsyg .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#xuwkdlnsyg .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#xuwkdlnsyg .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="cluster_round1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">cluster_round1</th>
+<th id="Age" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Age</th>
+<th id="RestingBP" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">RestingBP</th>
+<th id="Cholesterol" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Cholesterol</th>
+<th id="RestingECG" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">RestingECG</th>
+<th id="MaxHR" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">MaxHR</th>
+<th id="Oldpeak" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Oldpeak</th>
+<th id="statistic" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">statistic</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_center" headers="cluster_round1">1</td>
+<td class="gt_row gt_right" headers="Age">58.23</td>
+<td class="gt_row gt_right" headers="RestingBP">134.96</td>
+<td class="gt_row gt_right" headers="Cholesterol">254.67</td>
+<td class="gt_row gt_right" headers="RestingECG">1.22</td>
+<td class="gt_row gt_right" headers="MaxHR">132.95</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.87</td>
+<td class="gt_row gt_left" headers="statistic">mean</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="cluster_round1">2</td>
+<td class="gt_row gt_right" headers="Age">52.15</td>
+<td class="gt_row gt_right" headers="RestingBP">129.71</td>
+<td class="gt_row gt_right" headers="Cholesterol">241.88</td>
+<td class="gt_row gt_right" headers="RestingECG">0.85</td>
+<td class="gt_row gt_right" headers="MaxHR">159.66</td>
+<td class="gt_row gt_right" headers="Oldpeak">0.54</td>
+<td class="gt_row gt_left" headers="statistic">mean</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="cluster_round1">1</td>
+<td class="gt_row gt_right" headers="Age">7.26</td>
+<td class="gt_row gt_right" headers="RestingBP">18.68</td>
+<td class="gt_row gt_right" headers="Cholesterol">57.43</td>
+<td class="gt_row gt_right" headers="RestingECG">0.97</td>
+<td class="gt_row gt_right" headers="MaxHR">20.56</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.23</td>
+<td class="gt_row gt_left" headers="statistic">sd</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="cluster_round1">2</td>
+<td class="gt_row gt_right" headers="Age">9.25</td>
+<td class="gt_row gt_right" headers="RestingBP">16.66</td>
+<td class="gt_row gt_right" headers="Cholesterol">47.56</td>
+<td class="gt_row gt_right" headers="RestingECG">0.99</td>
+<td class="gt_row gt_right" headers="MaxHR">17.79</td>
+<td class="gt_row gt_right" headers="Oldpeak">0.76</td>
+<td class="gt_row gt_left" headers="statistic">sd</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-round1-statistics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7: Statistics of numerical variables for Round-1 Clustering.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>It can be observed that in cluster 1, the averages for age, resting blood pressure, cholesterol levels, resting electrocardiographic readings, and oldpeak are higher, whereas the average maximum heart rate is lower.</p>
+<p>Statistics for Round 2 Clustering:</p>
+<div class="cell" data-tbl-cap-location="bottom">
+<div id="tbl-round2-statistics" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-round2-statistics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="vzigbpmsxt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vzigbpmsxt table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#vzigbpmsxt thead, #vzigbpmsxt tbody, #vzigbpmsxt tfoot, #vzigbpmsxt tr, #vzigbpmsxt td, #vzigbpmsxt th {
+  border-style: none;
+}
+
+#vzigbpmsxt p {
+  margin: 0;
+  padding: 0;
+}
+
+#vzigbpmsxt .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#vzigbpmsxt .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#vzigbpmsxt .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#vzigbpmsxt .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#vzigbpmsxt .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#vzigbpmsxt .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#vzigbpmsxt .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#vzigbpmsxt .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#vzigbpmsxt .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#vzigbpmsxt .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#vzigbpmsxt .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#vzigbpmsxt .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#vzigbpmsxt .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#vzigbpmsxt .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#vzigbpmsxt .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vzigbpmsxt .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#vzigbpmsxt .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#vzigbpmsxt .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#vzigbpmsxt .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vzigbpmsxt .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#vzigbpmsxt .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vzigbpmsxt .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#vzigbpmsxt .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vzigbpmsxt .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#vzigbpmsxt .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vzigbpmsxt .gt_left {
+  text-align: left;
+}
+
+#vzigbpmsxt .gt_center {
+  text-align: center;
+}
+
+#vzigbpmsxt .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#vzigbpmsxt .gt_font_normal {
+  font-weight: normal;
+}
+
+#vzigbpmsxt .gt_font_bold {
+  font-weight: bold;
+}
+
+#vzigbpmsxt .gt_font_italic {
+  font-style: italic;
+}
+
+#vzigbpmsxt .gt_super {
+  font-size: 65%;
+}
+
+#vzigbpmsxt .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#vzigbpmsxt .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#vzigbpmsxt .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#vzigbpmsxt .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#vzigbpmsxt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#vzigbpmsxt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#vzigbpmsxt .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="cluster_round2" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">cluster_round2</th>
+<th id="Age" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Age</th>
+<th id="RestingBP" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">RestingBP</th>
+<th id="Cholesterol" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Cholesterol</th>
+<th id="RestingECG" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">RestingECG</th>
+<th id="MaxHR" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">MaxHR</th>
+<th id="Oldpeak" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Oldpeak</th>
+<th id="statistic" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">statistic</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_center" headers="cluster_round2">1</td>
+<td class="gt_row gt_right" headers="Age">56.68</td>
+<td class="gt_row gt_right" headers="RestingBP">135.13</td>
+<td class="gt_row gt_right" headers="Cholesterol">298.96</td>
+<td class="gt_row gt_right" headers="RestingECG">1.17</td>
+<td class="gt_row gt_right" headers="MaxHR">145.97</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.15</td>
+<td class="gt_row gt_left" headers="statistic">mean</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="cluster_round2">2</td>
+<td class="gt_row gt_right" headers="Age">53.14</td>
+<td class="gt_row gt_right" headers="RestingBP">129.70</td>
+<td class="gt_row gt_right" headers="Cholesterol">216.47</td>
+<td class="gt_row gt_right" headers="RestingECG">0.89</td>
+<td class="gt_row gt_right" headers="MaxHR">151.71</td>
+<td class="gt_row gt_right" headers="Oldpeak">0.98</td>
+<td class="gt_row gt_left" headers="statistic">mean</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="cluster_round2">1</td>
+<td class="gt_row gt_right" headers="Age">8.24</td>
+<td class="gt_row gt_right" headers="RestingBP">19.40</td>
+<td class="gt_row gt_right" headers="Cholesterol">41.14</td>
+<td class="gt_row gt_right" headers="RestingECG">0.98</td>
+<td class="gt_row gt_right" headers="MaxHR">23.16</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.20</td>
+<td class="gt_row gt_left" headers="statistic">sd</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="cluster_round2">2</td>
+<td class="gt_row gt_right" headers="Age">9.24</td>
+<td class="gt_row gt_right" headers="RestingBP">16.19</td>
+<td class="gt_row gt_right" headers="Cholesterol">27.53</td>
+<td class="gt_row gt_right" headers="RestingECG">0.99</td>
+<td class="gt_row gt_right" headers="MaxHR">22.50</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.14</td>
+<td class="gt_row gt_left" headers="statistic">sd</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-round2-statistics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8: Statistics of numerical variables for Round-2 clustering
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+</section>
+<section id="frequency-distribution-of-categorical-variables-for-each-cluster-of-round-2" class="level3">
+<h3 class="anchored" data-anchor-id="frequency-distribution-of-categorical-variables-for-each-cluster-of-round-2">Frequency Distribution of Categorical Variables for Each Cluster of round-2</h3>
+<p>This frequency distribution allows us to analyze how categorical variables are distributed across the different clusters, which can provide insights into the characteristics of each cluster. For instance, if a particular category of a variable like <strong><code>ChestPainType</code></strong> is over-represented in one cluster compared to others, it might suggest a specific health profile or risk factor associated with that cluster.</p>
+<div id="tbl-cluster-round2-freqTable" class="cell anchored" data-tbl-cap-location="top">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cluster-round2-freqTable-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9: Frequency distribution of categorical variables based on K-means round-2 clusters.
+</figcaption>
+<div aria-describedby="tbl-cluster-round2-freqTable-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  cluster_round2 category       value        frequency
+           &lt;int&gt; &lt;chr&gt;          &lt;fct&gt;            &lt;int&gt;
+1              1 ChestPainType  Typical              7
+2              1 ChestPainType  Atypical            19
+3              1 ChestPainType  Non-Typical         25
+4              1 ChestPainType  Asymptomatic        60
+5              1 ExerciseAngina No                  67
+6              1 ExerciseAngina Yes                 44</code></pre>
+</div>
+</div>
+</figure>
+</div>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-cluster-heartD-sex-round2" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cluster-heartD-sex-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-cluster-heartD-sex-round2-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cluster-heartD-sex-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Heart Disease and sex distribution in round-2 clusters.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-cluster-chestP-slope-round2" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cluster-chestP-slope-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-cluster-chestP-slope-round2-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cluster-chestP-slope-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: Distribution of chest pain and slope based on the round-2 clusters.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-cluster-exerAngina-fastingBS-round2" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cluster-exerAngina-fastingBS-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-cluster-exerAngina-fastingBS-round2-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cluster-exerAngina-fastingBS-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13: Distribution of exercise-induced angina and fasting blood sugar on the roun-2 clusters.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-cluster-majorVessels-thalassemia-round2" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cluster-majorVessels-thalassemia-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-cluster-majorVessels-thalassemia-round2-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cluster-majorVessels-thalassemia-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14: Distribution of major vessels and thalassemia on the round-2 clusters.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="visualization-of-k-means-clusters" class="level3">
+<h3 class="anchored" data-anchor-id="visualization-of-k-means-clusters"><strong>Visualization of K-Means Clusters</strong></h3>
+<p>I visualize the clusters obtained by K-means algorithm using Principal Component Analysis (PCA) in order to uncover patterns and groupings that might not be apparent in the high-dimensional space. PCA is a method used to reduce the number of variables in a dataset while retaining most of the original information. It does this by transforming the original variables into a new set of variables, the principal components, which are orthogonal (uncorrelated) and account for decreasing proportions of the total variance in the data <span class="citation" data-cites="principaa">[@principaa]</span>.</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-clustering1-visl" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clustering1-visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-clustering1-visl-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clustering1-visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15: K-means clustering round-1. PCA is used to visualize the clusters with two key components of the dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-clustering2-visl" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clustering2-visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-clustering2-visl-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clustering2-visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16: K-means clustering round-2.by PCA of the dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="visualization-of-pca-in-the-context-of-k-means-clustering" class="level3">
+<h3 class="anchored" data-anchor-id="visualization-of-pca-in-the-context-of-k-means-clustering"><strong>Visualization of PCA in the Context of K-Means Clustering</strong></h3>
+<p>Principal Component Analysis (PCA) is a powerful technique used in data analysis for dimensionality reduction. It transforms high-dimensional data into a lower-dimensional form, making it easier to visualize and interpret, especially when dealing with complex datasets like those in healthcare <span class="citation" data-cites="principa">[@principa]</span>.</p>
+<p>In the context of k-means clustering, particularly with datasets involving multiple variables related to heart disease, PCA serves as an invaluable tool for several reasons:</p>
+<p><strong>Simplifying Data Visualization</strong>: PCA reduces the dimensions of the data to the two most informative components (PC1 and PC2). This simplification allows us to create a two-dimensional scatter plot, where each point represents a patient, and the clustering results can be visually assessed <span class="citation" data-cites="principa">[@principa]</span>.</p>
+<p><strong>Understanding Data Structure</strong>: By visualizing the data in the reduced PCA space, we can observe how the patients are grouped by the k-means algorithm. Clusters that are distinct and well-separated in the PCA plot suggest that k-means has successfully identified meaningful patterns in the data.</p>
+<p><strong>Interpreting Clusters</strong>: The PCA plot can help in interpreting the characteristics of the clusters. For instance, if patients with certain risk factors (like high cholesterol or age) are predominantly found in one cluster, it could indicate a group with a higher risk of heart disease.</p>
+<p><strong>Facilitating Decision Making</strong>: The clarity provided by PCA visualization aids in making informed decisions, such as adjusting the number of clusters in k-means or identifying key variables for further analysis.</p>
+<p>In summary, PCA visualization in the context of k-means clustering provides a clear, simplified view of how patients are grouped based on their health data. This approach not only aids in validating the clustering results but also offers insights into the underlying structure of the data, which is crucial for accurate interpretation and subsequent healthcare decisions.</p>
+<p>To better understand the principal components we look at PCA Loadings. PCA loadings show how much each original variable contributes to each principal component <span class="citation" data-cites="principa">[@principa]</span>. This helps in understanding what characteristics (variables) are most influential in differentiating the clusters.</p>
+<div id="tbl-exracting-PCA-loadings" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-exracting-PCA-loadings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-stdout">
+<pre><code>                         PC1           PC2
+Age            -3.840605e-02  0.1805473584
+Sex             1.809087e-03  0.0008614885
+ChestPainType  -1.346164e-03  0.0134038544
+RestingBP      -5.046882e-02  0.1052647923
+Cholesterol    -9.979678e-01 -0.0160574683
+FastingBSugar  -9.354910e-05  0.0004547923
+RestingECG     -3.339509e-03  0.0041332466
+MaxHR           3.763080e-03 -0.9770783917
+ExerciseAngina -5.747917e-04  0.0075579879
+Oldpeak        -1.155392e-03  0.0179443866
+ST_Slope        3.234030e-06  0.0104115930
+MajorVessels   -2.303433e-03  0.0114799888
+Thalassemia    -8.202218e-04  0.0237684135</code></pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-exracting-PCA-loadings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;10: Contribution rates of each variable to PC1 and PC2.
+</figcaption>
+</figure>
+</div>
+<section id="visualizing-pca-loadings" class="level4">
+<h4 class="anchored" data-anchor-id="visualizing-pca-loadings"><strong>Visualizing PCA Loadings</strong></h4>
+<p>A bar plot to display the contribution of each original variable to <strong><code>PC1</code></strong> and <strong><code>PC2</code></strong>:</p>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-pca-loadings-Visl" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pca-loadings-Visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-pca-loadings-Visl-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pca-loadings-Visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17: The bar plot displays the contribution of each original variable to PC1 and PC2.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>PCA has reduced the multidimensional data into two components that capture the most variance. These components are linear combinations of the original variables, with loadings indicating the contribution of each variable.</p>
+<p>From the PCA loadings we see that PC1 seems to be heavily influenced by cholesterol, suggesting that this component might be capturing aspects of patient health related to metabolic factors. While PC2, influenced significantly by both MaxHR and age (but in opposite directions), might be capturing a combination of cardiovascular efficiency (reflected by heart rate) and age-related factors.</p>
+<p>The PCA loadings and subsequent cluster visualization offer insights into the underlying characteristics of patient groups. PC1 primarily reflects cholesterol-related variations, while PC2 captures a blend of heart rate and age factors. This dimensional reduction, coupled with k-means clustering, provides a nuanced understanding of patient health profiles, potentially aiding in targeted healthcare strategies. However, these findings should be considered exploratory and validated further with clinical expertise to ensure their relevance and accuracy in medical research or practice.</p>
+</section>
+<section id="conclusion" class="level4">
+<h4 class="anchored" data-anchor-id="conclusion">Conclusion:</h4>
+<p>In our analysis of the <strong><code>heart Disease</code></strong> dataset using k-means clustering with two clusters, we observed moderate consistency in patient groupings across two rounds of clustering. While a significant portion of patients were grouped into the same cluster in both rounds, indicating potentially meaningful groupings, there was also notable movement between clusters. This suggests that while there may be some stable patterns in the data, there is also a degree of variability in how patients are grouped. These findings highlight the importance of considering multiple rounds of clustering and possibly exploring additional clustering methods or incorporating more domain-specific knowledge for a comprehensive understanding of patient categorizations.</p>
+</section>
+</section>
+</section>
+<section id="hierarchical-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="hierarchical-clustering"><strong>Hierarchical Clustering</strong></h2>
+<p>Hierarchical clustering is a method of cluster analysis that seeks to build a hierarchy of clusters. It is a widely used and effective approach in data analysis for grouping data points into a tree-like structure based on their similarity <span class="citation" data-cites="hierarch">[@hierarch]</span>. Hierarchical clustering involves creating a hierarchy of clusters, which is typically visualized in a dendrogram.</p>
+<p>There are two main types:</p>
+<ul>
+<li><strong>Agglomerative (Bottom-Up)</strong>: Each observation starts in its own cluster, and pairs of clusters are merged as one moves up the hierarchy.</li>
+<li><strong>Divisive (Top-Down)</strong>: All observations start in one cluster, and splits are performed recursively as one moves down the hierarchy.</li>
+</ul>
+<p>In the agglomerative approach, each data point starts as a single cluster and then pairs of clusters are successively merged based on their distance or similarity.</p>
+<p>Common linkage criteria for merging clusters include methods like Ward’s method, maximum or complete linkage, average linkage, and single linkage.</p>
+<p>The results of hierarchical clustering are often represented in a dendrogram, a tree-like diagram that records the sequences of merges or splits. The height (y-axis) of the dendrogram is the distance for the split or merge.</p>
+<p>Hierarchical clustering is used in various fields such as biology (for gene and protein sequencing), marketing (customer segmentation), and document clustering in information retrieval.</p>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li><p>No need to specify the number of clusters in advance.</p></li>
+<li><p>The dendrogram provides a visual summary of the clustering process, which can be an informative tool for understanding the data.</p></li>
+</ul>
+<p><strong>Limitations</strong>:</p>
+<ul>
+<li><p>Sensitive to noise and outliers.</p></li>
+<li><p>Hierarchical clustering can be more computationally expensive than other clustering methods, like k-means.</p></li>
+</ul>
+<p>Hierarchical clustering’s ability to provide intuitive dendrograms and its flexibility (no need to pre-specify the number of clusters) make it a popular choice for exploratory data analysis.</p>
+<p>In hierarchical clustering, different linkage methods are used to determine the distance (similarities, dissimilarities) between the sets of observations. The choice of linkage method can significantly affect the outcomes of the clustering process. Here’s a brief description of three common linkage methods: Ward’s method, Complete linkage, and Average linkage <span class="citation" data-cites="msc2023">[@msc2023]</span>.</p>
+<ol type="1">
+<li><p>Ward’s Method (ward.D2): Ward’s method, particularly the ward.D2 variant, is an agglomerative clustering approach. It minimizes the total within-cluster variance. At each step, the pair of clusters with the minimum between-cluster distance are merged. Application: This method is particularly useful when the clusters are of approximately similar sizes and when you want to minimize the variance within clusters. Characteristics: Tends to create more compact, equally sized clusters, which can be advantageous for certain types of data but may force some natural groupings to merge <span class="citation" data-cites="msc2023">[@msc2023]</span> .</p></li>
+<li><p>Complete Linkage: Complete linkage clustering, also known as the maximum or farthest neighbor method, defines the distance between two clusters as the maximum distance between any single data point in the first cluster and any single data point in the second cluster. Application: It’s well-suited for separating clusters that are relatively compact and far from each other. Characteristics: This method can often reveal the actual structure of the data but might also be sensitive to outliers, resulting in clusters that are influenced by the most dissimilar members <span class="citation" data-cites="hierarcha">[@hierarcha]</span> .</p></li>
+<li><p>Average Linkage: In average linkage clustering, the distance between two clusters is defined as the average distance between each data point in the first cluster and every data point in the second cluster. Application: It is useful for creating clusters where each member is similar on average to the members of its cluster. Characteristics: This method provides a balance between the sensitivity of the complete method to outliers and the tendency of the Ward’s method to create clusters of similar sizes. However, it can sometimes create chaining effects where clusters end up being elongated and straggly <span class="citation" data-cites="msc2023">[@msc2023]</span>.</p>
+<p>In this analysis, we will perform the hierarchical clustering using the two most common linkage methods (the ward and the complete linkage), and we will compare them.</p></li>
+</ol>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-clustering-hierarchical-ward-method" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clustering-hierarchical-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-clustering-hierarchical-ward-method-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clustering-hierarchical-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18: Hierarchical clustering using “ward.D2” method.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>According to the dendogram, the best height to cut the dendogram is 25-30 referring to two clusters. This result confirms the same result for the best number of clusters that we obtained by the Scree plot when we perform the K-means clustering.</p>
+<p>Now, let’s see the table that shows the number of observation in each cluster.</p>
+<div id="tbl-hierarchical-clustering-ward-method" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-hierarchical-clustering-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-hierarchical-clustering-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;11: Hierarchical Clustering Table Ward.D2 Method
+</figcaption>
+</figure>
+</div>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Cluster 1</th>
+<th>Cluster 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>116</td>
+<td>187</td>
+</tr>
+</tbody>
+</table>
+<p>The cluster assignment for each variable.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 1 1 1 2 2 2 1 2 2 1 2 2 1 2 1 2 2 2 2 2 1 1 2 2 1 2 2 1 2 1 2 1 2 2 2 2 1
+ [38] 1 1 1 1 2 2 1 2 2 2 2 1 1 2 2 2 2 2 1 2 2 2 1 2 2 1 1 1 1 2 2 1 2 2 1 1 2
+ [75] 2 2 1 2 2 1 1 2 2 1 2 2 2 2 2 2 2 1 2 2 2 2 1 1 2 2 2 2 2 1 2 2 2 2 1 1 2
+[112] 1 2 1 1 2 1 2 1 2 1 1 1 1 1 2 1 1 2 2 2 2 2 2 2 2 1 1 1 1 2 2 1 1 1 2 1 2
+[149] 2 2 1 2 1 1 1 1 2 2 2 2 2 2 2 2 1 2 2 1 2 2 1 1 2 2 2 1 1 1 2 1 2 1 2 1 2
+[186] 2 1 1 2 2 2 1 1 2 2 1 1 2 2 2 2 2 1 1 2 1 1 1 2 2 2 2 2 1 2 2 2 2 2 2 2 2
+[223] 2 1 2 2 2 2 1 1 2 1 2 1 2 1 1 2 2 2 2 2 2 2 1 1 2 1 2 1 1 1 1 2 2 2 2 2 2
+[260] 2 2 1 2 2 1 1 1 1 2 2 1 2 1 2 2 2 2 2 2 2 1 2 2 2 2 1 1 2 2 2 2 2 1 1 2 2
+[297] 1 2 2 1 1 2 2</code></pre>
+</div>
+</div>
+<p>The dendogram with two colored clusters</p>
+<div class="cell tbl-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-colored-dendogram-ward-method" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-colored-dendogram-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-colored-dendogram-ward-method-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-colored-dendogram-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19: Colored Dendogram for the Two Hierarchical Clusters by ward.D2 Method
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The Clusters obtained hierarchically by the ward.D2 method:</p>
+<div class="cell tbl-cap-location-bottom">
+
+</div>
+<p>The graph of colored clusters by the ward.D2 method shows a lot of overlapping. The variance of observations in cluster one is higher than the variance of observation in cluster two.</p>
+<section id="hierarchical-clustering-by-the-average-linkage-method" class="level3">
+<h3 class="anchored" data-anchor-id="hierarchical-clustering-by-the-average-linkage-method">Hierarchical Clustering by the Average Linkage Method</h3>
+<div class="cell fig-cap-location-bottom">
+<div class="cell-output-display">
+<div id="fig-clustering-hierarchical-average-linkage" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clustering-hierarchical-average-linkage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="new_heart_disease_files/figure-html/fig-clustering-hierarchical-average-linkage-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clustering-hierarchical-average-linkage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20: Hierarchical clustering using average linkage method.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The dendrogram by average linkage looks highly unbalanced clustered. This indicates that choosing the right linkage method for the dataset is crucial for clustering analysis.</p>
+<p>To examine the composition of clusters and identify predominant variables or characteristics in each cluster for the hierarchical clustering results, we assign these cluster labels back to the original data, and summarize the data by cluster to understand the mean or median values of each variable within each cluster.</p>
+<div class="cell" data-tbl-cap-location="bottom">
+<div id="tbl-average-of-vars-for-hcluster-round1" class="cell anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-average-of-vars-for-hcluster-round1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="osncjrvket" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#osncjrvket table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#osncjrvket thead, #osncjrvket tbody, #osncjrvket tfoot, #osncjrvket tr, #osncjrvket td, #osncjrvket th {
+  border-style: none;
+}
+
+#osncjrvket p {
+  margin: 0;
+  padding: 0;
+}
+
+#osncjrvket .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#osncjrvket .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#osncjrvket .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#osncjrvket .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#osncjrvket .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#osncjrvket .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#osncjrvket .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#osncjrvket .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#osncjrvket .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#osncjrvket .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#osncjrvket .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#osncjrvket .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#osncjrvket .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#osncjrvket .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#osncjrvket .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#osncjrvket .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#osncjrvket .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#osncjrvket .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#osncjrvket .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#osncjrvket .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#osncjrvket .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#osncjrvket .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#osncjrvket .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#osncjrvket .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#osncjrvket .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#osncjrvket .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#osncjrvket .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#osncjrvket .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#osncjrvket .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#osncjrvket .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#osncjrvket .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#osncjrvket .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#osncjrvket .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#osncjrvket .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#osncjrvket .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#osncjrvket .gt_left {
+  text-align: left;
+}
+
+#osncjrvket .gt_center {
+  text-align: center;
+}
+
+#osncjrvket .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#osncjrvket .gt_font_normal {
+  font-weight: normal;
+}
+
+#osncjrvket .gt_font_bold {
+  font-weight: bold;
+}
+
+#osncjrvket .gt_font_italic {
+  font-style: italic;
+}
+
+#osncjrvket .gt_super {
+  font-size: 65%;
+}
+
+#osncjrvket .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#osncjrvket .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#osncjrvket .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#osncjrvket .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#osncjrvket .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#osncjrvket .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#osncjrvket .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table cell table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="hcluster_ward" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">hcluster_ward</th>
+<th id="Age" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Age</th>
+<th id="RestingBP" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">RestingBP</th>
+<th id="Cholesterol" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Cholesterol</th>
+<th id="RestingECG" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">RestingECG</th>
+<th id="MaxHR" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">MaxHR</th>
+<th id="Oldpeak" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Oldpeak</th>
+<th id="statistic" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">statistic</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_center" headers="hcluster_ward">1</td>
+<td class="gt_row gt_right" headers="Age">57.46</td>
+<td class="gt_row gt_right" headers="RestingBP">134.75</td>
+<td class="gt_row gt_right" headers="Cholesterol">253.15</td>
+<td class="gt_row gt_right" headers="RestingECG">1.21</td>
+<td class="gt_row gt_right" headers="MaxHR">134.65</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.68</td>
+<td class="gt_row gt_left" headers="statistic">mean</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="hcluster_ward">2</td>
+<td class="gt_row gt_right" headers="Age">52.57</td>
+<td class="gt_row gt_right" headers="RestingBP">129.79</td>
+<td class="gt_row gt_right" headers="Cholesterol">242.69</td>
+<td class="gt_row gt_right" headers="RestingECG">0.86</td>
+<td class="gt_row gt_right" headers="MaxHR">158.89</td>
+<td class="gt_row gt_right" headers="Oldpeak">0.64</td>
+<td class="gt_row gt_left" headers="statistic">mean</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="hcluster_ward">1</td>
+<td class="gt_row gt_right" headers="Age">7.59</td>
+<td class="gt_row gt_right" headers="RestingBP">19.21</td>
+<td class="gt_row gt_right" headers="Cholesterol">60.81</td>
+<td class="gt_row gt_right" headers="RestingECG">0.97</td>
+<td class="gt_row gt_right" headers="MaxHR">22.84</td>
+<td class="gt_row gt_right" headers="Oldpeak">1.31</td>
+<td class="gt_row gt_left" headers="statistic">sd</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="hcluster_ward">2</td>
+<td class="gt_row gt_right" headers="Age">9.37</td>
+<td class="gt_row gt_right" headers="RestingBP">16.29</td>
+<td class="gt_row gt_right" headers="Cholesterol">44.99</td>
+<td class="gt_row gt_right" headers="RestingECG">0.99</td>
+<td class="gt_row gt_right" headers="MaxHR">17.35</td>
+<td class="gt_row gt_right" headers="Oldpeak">0.85</td>
+<td class="gt_row gt_left" headers="statistic">sd</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-average-of-vars-for-hcluster-round1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;12: The mean of numerical values in each cluster of round.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>In cluster one, mean values for all metrics except maximum heart rate are higher. This clustering suggests that patients in group one might have heart disease or be at a higher risk, while those in cluster two are less likely to have the disease due to lower cholesterol and resting blood pressure, among other factors. However, despite these patterns, individual variability necessitates further examination for accurate assessment.</p>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+<section id="conclusion-1" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-1">Conclusion</h2>
+<p>Our comprehensive analysis of heart disease data, utilizing a blend of machine learning techniques, has provided valuable insights into the diagnosis and clustering of heart disease patients. The application of the K-Nearest Neighbors (KNN) classification algorithm yielded a commendable accuracy of 84.44%. Further refinement through a 10-fold cross-validation process identified the optimal number of neighbors (k = 13) to enhance the model’s performance, achieving an accuracy of 86.44% and a Kappa statistic of 0.7221. These results underscore the effectiveness of KNN in distinguishing between patients with and without heart disease.</p>
+<p>In exploring patient clustering, we conducted two rounds of K-means clustering with the primary variation being the “nstart” parameter in the second round. The optimal number of clusters (k = 2) was determined through the elbow and silhouette methods. The consistency between the two rounds of clustering was notable, albeit with some variations in cluster sizes. The visualization of these clusters through Principal Component Analysis (PCA) offered a clear and interpretable two-dimensional representation of the patient groupings.</p>
+<p>Our investigation further extended to hierarchical clustering using both Ward and Complete linkage methods. The Complete linkage method resulted in unbalanced clusters, suggesting a sensitivity to certain data characteristics. In contrast, the Ward method yielded more insightful clusters. Specifically, patients in cluster one displayed consistently higher mean values across most measured variables, with the exception of maximum heart rate. This distinction potentially indicates a subgroup of patients with more severe manifestations of heart disease.</p>
+<p>Overall, our multi-faceted approach to analyzing heart disease data — encompassing KNN classification, K-means clustering, and hierarchical clustering — has not only affirmed the utility of these methods in medical data analysis but also highlighted the nuanced nature of heart disease presentation. The insights gleaned from this study could be instrumental in guiding targeted diagnostic and treatment strategies, ultimately contributing to improved healthcare outcomes for heart disease patients.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    const typesetMath = (el) => {
+      if (window.MathJax) {
+        // MathJax Typeset
+        window.MathJax.typeset([el]);
+      } else if (window.katex) {
+        // KaTeX Render
+        var mathElements = el.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            window.katex.render(texText.data, mathElements[i], {
+              displayMode: mathElements[i].classList.contains('display'),
+              throwOnError: false,
+              macros: macros,
+              fleqn: false
+            });
+          }
+        }
+      }
+    }
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        typesetMath(container);
+        return container.innerHTML
+      } else {
+        typesetMath(note);
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      typesetMath(note);
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

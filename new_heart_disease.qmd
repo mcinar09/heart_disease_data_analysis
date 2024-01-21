@@ -1,0 +1,1780 @@
+---
+title: "Clustering of Patients with Heart Disease"
+subtitle: "Capstone Project, M.S. in Data Analysis and Visualization "
+author: "Mukadder Cinar, CUNY, The Graduate Center"
+format: html
+standalone: true
+cite-method: biblatex
+link-citations: true
+bibliography: references.bib
+---
+
+## Introduction
+
+Cardiovascular Heart Disease (CVD) remains a pervasive global health challenge, contributing significantly to morbidity and mortality rates worldwide [@cardiova]. Given its status as a leading cause of death, continuous advancements in research and treatment approaches are essential to address its diverse characteristics effectively. As our comprehension of the variations among individuals with heart disease expands, individualized and precisely targeted treatments have surfaced as a compelling area of exploration in cardiovascular medicine [@leopold2018].
+
+In this project, we are analyzing heart disease data obtained from UCI Machine Learning Repository to find patterns and groups in patient information. We're using several methods to do this:
+
+1.  **K-Nearest Neighbors (KNN)**: First, we use KNN, a method that helps us classify patients based on their data. It looks at similar cases in the data and uses them to classify each patient.
+
+2.  **K-Means Clustering**: Next, we use k-means clustering. This method groups patients into clusters where patients in each cluster are similar to each other. It helps us see if there are common patterns among groups of patients.
+
+3.  **Visualization of Clusters** by PCA: To visualize the clusters formed by K-means, we employ Principal Component Analysis (PCA). By reducing the dimensionality of the dataset to its first two principal components (PC1 and PC2), we create a two-dimensional representation that captures the majority of the variance within the data. This visualization aids in interpreting the clustering results, offering a clear view of the patient groups in a reduced-dimensional space.
+
+4.  **Hierarchical Clustering**: Finally, we use hierarchical clustering. This method also groups patients but in a way that shows us a hierarchy, from very broad groups down to more specific ones.
+
+Through this analysis, we aim to provide insightful categorizations of patients based on their heart disease data, offering a potential pathway for personalized medicine and targeted healthcare interventions. This project not only underscores the power of machine learning in healthcare analytics but also highlights the importance of methodical data exploration in deriving meaningful conclusions from complex medical datasets.
+
+## Survey Literature
+
+Recent advancements in cardiovascular health research have been significantly driven by the integration of data-driven methodologies and predictive modeling. Two notable contributions in this field come from the works presented at the [Narayanan](https://pubs.aip.org/aip/acp/article-abstract/2946/1/060010/2920598/IoT-based-heart-disease-prediction-using-smote-and?redirectedFrom=fulltext) and the study by Radi et al.
+
+At the WFCES II 2022, Narayannan [@narayanan2023] underscored the importance of an integrative approach to understanding cardiovascular health. The focus was on utilizing data-driven methodologies to unravel the complexities of risk factors and their interplay in cardiovascular diseases. Narayannan's work lays a critical foundation in identifying and analyzing the various risk factors associated with heart conditions. Our project aims to complement Narayannan's approach by specifically focusing on patient stratification and targeted treatment approaches. By focusing on these specific aspects, we intend to enhance the practical application of data-driven insights in patient care, particularly in customizing treatment plans and preventive strategies based on individual risk profiles.
+
+In another significant contribution to the field, detailed in their paper available at [medRxiv](http://medrxiv.org/lookup/doi/10.1101/2023.11.11.23298416), Radi et al. [@radi2023] delve into the use of predictive modeling to develop early detection strategies for cardiovascular disorders. Their research highlights the potential of predictive models in identifying early signs of cardiovascular diseases, thereby enabling timely intervention. Building upon Radi et al.'s foundational work, our project aims to explore additional variables that might influence cardiovascular risk.
+
+In addition to the works of Narayannan and Radi et al., a notable contribution to cardiovascular research is found in a recent study published by [Elsevier](https://www.sciencedirect.com/science/article/abs/pii/S1746809423011291?via%3Dihub) [@singh2024]. This research explores the applications of machine learning in cardiovascular diagnosis and treatment, with a particular focus on enhancing accuracy and improving patient outcomes . This study underscores the pivotal role of machine learning techniques in revolutionizing cardiovascular healthcare by providing more precise diagnostic tools and efficacious treatment plans.
+
+Our project draws parallels and extends the insights from these existing studies. Like the Elsevier study, we too harness machine learning techniques, albeit with an emphasis on KNN classification and K-means clustering, to refine cardiovascular disease diagnosis and patient stratification. This aligns with the accuracy and outcome-centric approach of the Elsevier study.
+
+The integrative approach advocated by Narayannan at WFCES II 2022 resonates with our method of combining various machine learning techniques to understand cardiovascular risk factors better. Meanwhile, our effort to explore additional variables and refine existing models for predictive accuracy complements Radi et al.'s work on early detection strategies.
+
+While each study contributes uniquely to the field, our project serves as a continuation and expansion of these efforts. We build upon Narayannan's foundational understanding of risk factors, Radi et al.'s predictive modeling for early detection, and the Elsevier study's application of machine learning for accuracy and enhanced patient outcomes.
+
+## Methodology
+
+In this study, we have employed a systematic approach to analyze cardiovascular disease (CVD) data, leveraging a blend of machine learning techniques to unravel the complexities associated with heart disease diagnosis and patient management. Our methodology is structured to not only identify inherent patterns within the dataset but also to enhance the precision and applicability of our findings in clinical settings.
+
+Initially, we utilized the K-Nearest Neighbors (KNN) classification algorithm, a method renowned for its efficacy in pattern recognition within medical datasets. This was followed by an in-depth analysis using K-means clustering, conducted in two distinct rounds to assess the stability and reliability of the identified clusters. The first round of K-means clustering provided a baseline for patient groupings, while the second round, involving an adjustment in the "nstart" parameter, served to test the consistency of these groupings.
+
+Further enriching our analysis, Principal Component Analysis (PCA) was implemented to visualize the clusters in a reduced-dimensional space, thereby offering a clearer understanding of the data's structure. Lastly, hierarchical clustering, executed via both Ward and Complete linkage methods, was applied to explore and validate the data's inherent groupings at different levels of granularity.
+
+The comprehensive nature of this methodology, encompassing both classification and clustering techniques, is designed to yield insights that are robust, nuanced, and directly applicable to the improvement of cardiovascular health outcomes.
+
+### 
+
+### Data Collection and Management
+
+The dataset utilized for this project is sourced from the UCI Machine Learning Repository, specifically from the Heart Disease dataset available at UC Irvine Machine Learning Repository [@andrasjanosi].
+
+```{r setup, include=FALSE}
+
+library(knitr)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
+                      message = FALSE, echo = FALSE, dpi = 180,
+                      fig.width = 8, fig.height = 5
+    )
+
+#load the packages
+library(tidyverse)
+library(tidymodels)
+library(caret)
+library(readr)
+library(gt)
+library(tidyr)
+library(gridExtra)
+library(reshape2)
+library(cowplot)
+library(gtable)
+library(grid)
+library(class)
+library(dendextend)
+library(factoextra)
+
+
+
+
+#import the data
+cvd_patient <- read_csv("heart_disease.csv", show_col_types = FALSE)
+# Rename specific columns
+cvd_patient <-cvd_patient |>
+  rename(Age = age, Sex = sex, ChestPainType = cp, RestingBP = trestbps,FastingBSugar = fbs, RestingECG = restecg, MaxHR = thalach, MajorVessels = ca, ExerciseAngina = exang, Thalassemia = thal, Oldpeak = oldpeak, ST_Slope = slope, Cholesterol = chol, HeartDisease = num)
+#head(cvd_patient)
+
+
+# For the simplicity convert Heart Disease (target variable) to binary, 0 = no disease, 1 = disease
+cvd_patient <- cvd_patient |>
+    mutate(HeartDisease = ifelse(HeartDisease == 0, 0, 1))
+
+# Calculate the total number of missing values in each column
+missing_values <- sapply(cvd_patient, function(x) sum(is.na(x)))
+
+# Print the result
+#print(missing_values)
+
+
+impute_mode <- function(x) {
+  mode_value <- as.numeric(names(sort(table(x), decreasing = TRUE)[1]))
+  x <- ifelse(is.na(x), mode_value, x)
+  return(x)
+}
+# Impute missing values in 'MajorVessels' and 'Thalassemia' with their respective modes
+cvd_patient$MajorVessels <- impute_mode(cvd_patient$MajorVessels)
+cvd_patient$Thalassemia <- impute_mode(cvd_patient$Thalassemia)
+cvd_patients <- cvd_patient
+cvd_patients <- cvd_patients |>
+    mutate(HeartDisease = ifelse(HeartDisease == 0, 0, 1))
+
+#head(cvd_patients)
+```
+
+### Data Overview
+
+The dataset comprises a total of 76 attributes capturing various aspects related to heart health. However, it's crucial to note that the majority of published experiments have focused on a subset of 14 attributes. Notably, the Cleveland database within this collection has been the primary focus of machine learning researchers. The primary target variable, denoted as the "goal" field, represents the presence of heart disease in patients and is integer-valued, ranging from 0 (no presence) to 4. For this analysis, the target variable named as `HeartDisease` and converted to binary values as `0` and `1`.
+
+\
+
+```{r}
+#| label: tbl-original-data-table
+#| tbl-cap: View of the Dataset.
+#| cap-location: bottom
+#| column: page 
+
+cvd_patients |>
+  slice_head(n = 10)|>
+  gt()
+
+
+```
+
+### Understanding the data
+
+The UCI Heart Disease dataset is a comprehensive collection of clinical, demographic, and physiological data for the heart disease patients. The detailed explanation of each variable:
+
+Age: The patient's age in years. Age is a crucial factor in heart disease risk, with risk generally increasing with age.
+
+**Sex**: The patient's biological sex.
+
+-   0 = Female
+-   1 = Male
+
+Biological sex can influence heart disease risk and symptoms.
+
+**Chest Pain**: The type of chest pain experienced.
+
+-   1 = Typical Angina - Chest pain related to the heart not getting enough oxygen, usually triggered by physical activity or stress.
+
+-   2 = Atypical Angina - A less common form of chest pain related to heart function.
+
+-   3 = Non-Angina Pain - Chest pain not directly related to the heart.
+
+-   4 = Asymptomatic - No chest pain despite heart disease presence.
+
+**RestingBP:** (Resting Blood Pressure): The blood pressure (measured in mm Hg) when the patient is at rest. Blood pressure is the force of blood pushing against blood vessel walls. High resting blood pressure (hypertension) is a risk factor for heart disease.(in mm Hg on admission to the hospital) [@understa].
+
+**Cholesterol:** (Serum Cholesterol): The amount of cholesterol in the blood (mg/dl). High levels of cholesterol can lead to the buildup of plaques in arteries, increasing heart disease risk.
+
+**FastingBSugar:** (Fasting Blood Sugar ): Indicates if the fasting blood sugar level is higher than 120 mg/dl.
+
+-   0 = False (Normal)
+
+-   1 = True (High)
+
+    High fasting blood sugar can be a sign of diabetes, a risk factor for heart disease.
+
+**RestingECG:** (Resting Electrocardiographic Results): Results from an ECG test, which measures the heart's electrical activity.
+
+-   0 = Normal
+
+-   1 = ST-T Wave Abnormality - May indicate heart strain or poor blood supply.
+
+-   2 = Left Ventricular Hypertrophy - Enlargement and thickening of the heart's main pumping chamber.
+
+    A resting ECG (Electrocardiogram) is a diagnostic tool used to measure the electrical activity of the heart while at rest. It helps in detecting heart conditions by recording the timing and duration of each electrical phase in the heartbeat.
+
+    LVH, or Left Ventricular Hypertrophy, refers to the thickening of the walls of the heart's left ventricle, often identified through an ECG. It can be indicative of increased stress on the heart or other underlying conditions [@ogah2008].
+
+**MaxHR:** (Maximum Heart Rate Achieved): The highest heart rate achieved during exercise. Lower maximum heart rates can indicate poorer cardiovascular fitness and higher heart disease risk.
+
+**ExerciseAngina:** (Exercise - Induced Angina): Whether chest pain is triggered by physical exertion.
+
+-   0 = No
+-   1 = Yes
+
+Exercise-induced angina is a condition where physical exertion leads to chest pain or discomfort due to reduced blood flow to the heart muscle. It is a symptom of coronary artery disease, where the heart's arteries are narrowed or blocked. Indications include chest pain during activity, which usually resolves with rest. Angina can also manifest as discomfort in the arms, neck, jaw, shoulder, or back [@angina:2014].
+
+**Oldpeak:** (ST Depression Induced by Exercise Relative to Rest): The change in ST segment height on an ECG during exercise compared to rest. The ST segment is a part of the ECG readout, and changes can indicate poor blood flow to the heart [@burns2020].
+
+**ST_Slope:** (The Slope of the Peak Exercise ST Segment): The slope of the ST segment during peak exercise.
+
+-   1: Upsloping - May indicate healthier heart function.
+-   2: Flat - May suggest heart disease.
+-   3: Downsloping - Often considered a sign of significant heart disease.
+
+**MajorVessels:** (Number of Major Vessels Colored by Fluoroscopy): The number of major blood vessels in the heart (out of a possible 0 to 3) identified with fluoroscopy. Fluoroscopy is an imaging technique that uses X-rays to view internal organs. More vessels with blockages can indicate higher heart disease risk. Fewer visible vessels can indicate heart disease.
+
+**Thalassemia:** A blood disorder that affects hemoglobin, the oxygen-carrying component of blood.
+
+-   3: Normal
+-   6: Fixed Defect - A defect that does not change over time, often indicating a past heart issue.
+-   7: Reversible Defect - A defect that varies over time, often indicating episodes of poor blood flow.
+
+**HeartDisease** (Diagnosis of Heart Disease): The diagnosis of heart disease, based on angiographic disease status.
+
+-   0: Less than 50% diameter narrowing in any major vessel - typically considered no heart disease.
+-   1-4: More than 50% diameter narrowing - varying degrees of heart disease severity.
+
+Understanding these variables helps in comprehensively analyzing the dataset to draw meaningful insights related to cardiovascular health.
+
+#### Structure of the data set: {#sec-structure-of-the-data-set}
+
+```{r}
+#| label: tbl-data-structure
+#| tbl-cap: Structure of the Dataset
+#| tbl-cap-location: bottom
+
+
+str(cvd_patients)
+```
+
+### Pre-processing of the Data
+
+Data pre-processing involves a series of operations aimed at cleaning, transforming, and organizing raw data into a format suitable for analysis. This process significantly impacts the quality and reliability of the insights derived from the data [@wickham2023].
+
+#### Data Cleaning
+
+This step involves handling missing data points, dealing with duplicates, and addressing outliers. Imputing missing values or removing inconsistent entries is essential to maintain data integrity.
+
+In this dataset, two variables, Thalassemia and Major Vessels have missing values. For categorical variables like these two, a common approach is to impute missing values with the mode (the most frequently occurring value in the column) or to use a more sophisticated method such as predictive imputation [@imputem2019]. Since we don't have much of missing values, we impute them using the mode. Besides, for the sake of simplicity, I converted the the `HeartDisease` variable to binary and factored as `0` = `No Disease` and `1` = `Disease`.
+
+### 
+
+```{r}
+#| label: response-var-factored
+#| code-fold: true
+
+# Factor the response variable "HeartDisease"
+
+cvd_patients <- cvd_patients|>
+  mutate(HeartDisease = as.factor(HeartDisease))
+
+```
+
+#### Summary of Dataset {#sec-summary-of-dataset}
+
+Statistics of the data variables after imputing the missing values using the variable's mode value.
+
+```{r}
+#| label: tbl-summary-data
+#| tbl-cap: Summary of the Data
+#| tbl-cap-location: bottom
+#| code-fold: true
+
+summary(cvd_patients)
+```
+
+### Exploratory Data Analysis {#sec-exploratory-data-analysis}
+
+Exploratory Data Analysis (EDA) is a crucial initial step in the data analysis process. It involves the systematic examination and visualization of data to understand its structure, patterns, and potential insights [@wickham2023]. To understand the dataset, we visualize the variables and examine the distributions.
+
+#### Distribution of Categorical Variables
+
+As a part of Exploratory Data Analysis (EDA), we use bar plots to illustrate and get insights of the categorical variables.
+
+```{r}
+#| label: fig-categorical-vars
+#| fig-cap: The bar plots of Chest Pain, Fasting Blood Pressure, resting ECG, and Exercise-Induced Angina.
+#| fig-cap-location: bottom
+
+# Convert the specified variables to factors
+cvd_categorical <- cvd_patients |>
+  mutate(ChestPainType = factor(ChestPainType, labels =c("Typical","Atypical","Non-Typical","Asymptomatic")), 
+         Thalassemia = factor(Thalassemia, labels = c("Normal", "Fixed-Defect", "Reversible-Defect" )),
+         RestingECG = factor(RestingECG, labels = c("Normal", "Abnormal", "LVH")), 
+         ExerciseAngina = factor(ExerciseAngina, labels = c("No", "Yes")), 
+         ST_Slope = factor(ST_Slope, labels = c("Up", "Flat", "Down")), 
+         Thalassemia = factor(Thalassemia, labels = c("Normal", "Fixed-Defect", "Reversible-Defect" )), 
+         FastingBSugar = factor(FastingBSugar, labels = c("Normal", "High")),
+         Sex = factor(Sex, labels = c("Female", "Male")), 
+         HeartDisease = factor(HeartDisease, labels = c("No Disease", "Disease")) 
+        )
+
+# Create individual bar plots for each variable
+plot_cp <- ggplot(cvd_categorical, aes(x = ChestPainType, fill = ChestPainType)) + geom_bar() + labs(title = "Chest Pain", x = "", y = "")+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+
+plot_fbs <- ggplot(cvd_categorical, aes(x = FastingBSugar, fill= FastingBSugar )) + geom_bar() + labs(title = "Fasting Blood Sugar", x = "", y = "")+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+  
+plot_restecg <- ggplot(cvd_categorical, aes(x = RestingECG, fill = RestingECG)) + geom_bar() + labs(title = "Resting ECG", x = "", y = "")+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+plot_exang <- ggplot(cvd_categorical, aes(x = ExerciseAngina, fill = ExerciseAngina)) + geom_bar() + labs(title = "Exercise-induced Angina", x = "", y = "")+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+
+
+# Arrange the plots in a grid
+ggsave("my_plots.pdf",
+grid.arrange(plot_cp, plot_fbs, plot_restecg, plot_exang, 
+              
+             ncol = 2, nrow = 2, layout_matrix = rbind(c(1, 2), c(3, 4)),
+             
+             top = "Distribution of Categorical Features (Count)"),
+
+  width = 6, height = 9)           
+
+
+```
+
+The plot reveals that the majority of patients experience asymptomatic chest pain, indicating no chest pain, while the fewest exhibit symptoms of typical chest pain.\
+
+```{r}
+#| label: fig-categorical2-vars
+#| fig-cap: Bar plots of ST_Slope, Sex, Thalassemia, and Heart Disease.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+plot_slope <- ggplot(cvd_categorical, aes(x = ST_Slope, fill = ST_Slope)) + geom_bar() + labs(title = "ST Slope", x = "", y = "")+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+plot_sex <- ggplot(cvd_categorical, aes(x = Sex, fill = Sex)) + geom_bar() + labs(title = "Sex", x = "", y = "") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+plot_thal <- ggplot(cvd_categorical, aes(x = Thalassemia, fill = Thalassemia)) + geom_bar() + labs(title = "Thalassemia", x = "", y = "")+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+plot_num <- ggplot(cvd_categorical, aes(x = HeartDisease, fill = HeartDisease)) + geom_bar() + labs(title = "Heart Disease Presence", x = "", y = "")+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+# Arrange the plots in a grid
+ggsave("my_plots.pdf",
+grid.arrange( plot_slope, plot_thal, plot_sex, plot_num, 
+             ncol = 2, nrow = 2, layout_matrix = rbind(c(5, 7), c(6, 8)),
+             
+             top = "Distribution of Categorical Features (Count)"),
+
+ width = 6, height = 10)
+               
+```
+
+The plot highlights that the largest proportion of heart disease patients are male. Additionally, it indicates that the counts of up-slope and flat-slope are quite similar, while the count of down-slope is relatively low.
+
+#### Distribution of Numerical Variables
+
+The distribution of numerical variables refers to how the values of these variables are spread or scattered across a range. In data analysis, understanding the distribution of numerical variables is crucial for various tasks, such as statistical testing, data modeling, and feature selection.
+
+```{r}
+#| label: fig-numerical-var-distribution
+#| fig-cap: Numerical Variables Distribution
+#| fig-cap-location: bottom
+
+
+variables_num <- cvd_patients|>
+  select(Age, Cholesterol, Oldpeak, MaxHR, RestingBP)
+
+# Create individual histograms for each variable
+plot_age <-  ggplot(variables_num, aes(x = Age)) +
+    geom_histogram(bins = 30, fill = "blue", color = "black") +
+    labs(title = "Age",
+       x = "",
+       y = "") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+
+plot_chol <-  ggplot(variables_num, aes(x = Cholesterol)) +
+    geom_histogram(binwidth = 15, fill = "blue", color = "black") +
+    labs(title = "Cholesterol",
+       x = "",
+       y = "") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+
+plot_bp <- ggplot(variables_num, aes(x = RestingBP)) +
+    geom_histogram(binwidth = 5, fill = "blue", color = "black") +
+    labs(title = "Resting Blood Pressure",
+       x = "",
+       y = "") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+
+
+plot_hr <- ggplot(variables_num, aes(x = MaxHR)) +
+    geom_histogram(binwidth = 10, fill = "blue", color = "black") +
+    labs(title = "Maximum Heart Rate",
+       x = "",
+       y = "") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5)) # Smaller font size for y axis
+
+
+
+
+
+# Arrange the plots in a grid
+grid.arrange( plot_age,
+              plot_chol,
+              plot_bp,  
+              plot_hr,
+             ncol = 2, nrow = 2,
+              top = "Distribution of Numerical Variables")
+```
+
+The plot demonstrates a noticeable increase in the number of patients after the age of 40. Cholesterol levels exhibit some outliers on the higher side. Furthermore, the distribution of resting blood pressure is skewed to the right, whereas the distribution of Maximum heart rate is skewed to the left.
+
+#### Bivariate Analysis
+
+Bivariate analysis involves the analysis of two variables simultaneously, to understand the relationship between them. It is a fundamental technique in statistics and data analysis for exploring correlations, associations, and patterns between two different variables [@rforda]. This analysis can reveal whether there's a relationship between the two variables and how strong that relationship might be.
+
+##### Numerical Variables vs. Sex
+
+Displaying the distribution of variables segregated by gender can uncover hidden patterns and yield deeper insights, thereby aiding in more informed decision-making and conclusion formulation.
+
+```{r}
+
+#| label: fig-boxplotVarSex
+#| fig-cap: Distribution of numerical variables vs. sex.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+
+# Convert the 'sex' variable to a factor with appropriate labels
+cvd_patients_Sex <- cvd_patients|>
+  select(Age, Sex, Cholesterol, RestingBP, MaxHR, Oldpeak)|>
+   mutate(Sex = factor(Sex, levels = c(0, 1), labels = c("Female", "Male")))
+
+# Create individual box plots for each variable
+plot_age <- ggplot(cvd_patients_Sex, aes(x = Sex, y = Age, fill = Sex)) +
+  geom_boxplot(aes(fill = Sex)) +
+  labs(x = "", y = "Age") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 5), # Smaller font size for x axis
+        axis.text.y = element_text(size = 5),
+        axis.title.y = element_text(size = 8)) # Smaller font size for y-axis label
+
+plot_chol <- ggplot(cvd_patients_Sex, aes(x = Sex, y = Cholesterol, fill = Sex)) +
+  geom_boxplot(aes(fill = Sex)) +
+  labs(x = "", y = "Cholesterol") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 6), # Smaller font size for x axis
+        axis.text.y = element_text(size = 6), # Smaller font size for y axis
+        axis.title.y = element_text(size = 8)) # Smaller font size for y-axis label
+
+plot_bp <- ggplot(cvd_patients_Sex, aes(x = Sex, y = RestingBP, fill = Sex)) +
+  geom_boxplot(aes(fill = Sex)) +
+  labs( x = "", y = "Resting BP") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 6), # Smaller font size for x axis
+        axis.text.y = element_text(size = 6), # Smaller font size for y axis
+        axis.title.y = element_text(size = 8)) # Smaller font size for y-axis label
+
+plot_hr <- ggplot(cvd_patients_Sex, aes(x = Sex, y = MaxHR, fill = Sex)) +
+  geom_boxplot(aes(fill = Sex)) +
+  labs( x = "",  y = "Max Heart Rate") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 6), # Smaller font size for x axis
+        axis.text.y = element_text(size = 6), # Smaller font size for y axis
+        axis.title.y = element_text(size = 8)) # Smaller font size for y-axis label
+
+plot_oldpeak <- ggplot(cvd_patients_Sex, aes(x = Sex, y = Oldpeak)) +
+  geom_boxplot(aes(fill = Sex)) +
+  labs(x = "", y = "Oldpeak") +
+  theme_minimal()+
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(size = 8), # Smaller font size for title
+        axis.text.x = element_text(size = 6), # Smaller font size for x axis
+        axis.text.y = element_text(size = 6), # Smaller font size for y axis
+        axis.title.y = element_text(size = 8)) # Smaller font size for y-axis label
+
+# Arrange the plots in a grid
+grid.arrange(plot_age, plot_chol, plot_bp, plot_hr, plot_oldpeak, ncol = 2, nrow = 3,
+              top = "Distribution of Variables by Sex")
+```
+
+##### Categorical Variables Based on the Target Variable (Heart Disease)
+
+It's important to examine the distribution of categorical variables in relation to the response variable to gain a better understanding of the data and to provide insights for further analysis.
+
+```{r}
+#| label: fig-cpTarget-slopeTarget
+#| fig-cap: Distribution of chest pain types and ST slope based on the target variable.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+
+# Convert the specified variables to factors
+cvd_categorical <- cvd_patients |>
+  mutate(ChestPainType = factor(ChestPainType, labels =c("Typical","Atypical","Non-Typical","Asymptomatic")), 
+         Thalassemia = factor(Thalassemia, labels = c("Normal", "Fixed-D", "Reversible-D" )),
+         RestingECG = factor(RestingECG, labels = c("Normal", "Abnormal", "LVH")), 
+         ExerciseAngina = factor(ExerciseAngina, labels = c("No", "Yes")), 
+         ST_Slope = factor(ST_Slope, labels = c("Up", "Flat", "Down")), 
+         FastingBSugar = factor(FastingBSugar, labels = c("Normal", "High")),
+         Sex = factor(Sex, labels = c("Female", "Male")), 
+         HeartDisease = factor(HeartDisease, labels = c("No Disease", "Disease")) 
+        )
+
+
+chestPain_grouped <- cvd_categorical |>
+  group_by(ChestPainType, HeartDisease) |>
+  summarise(count = n(), .groups = 'drop') |>
+  mutate(total = sum(count)) |>
+  mutate(percentage = count / total * 100)
+
+# Plot
+chestP<- ggplot(chestPain_grouped, aes(x = ChestPainType, y = percentage, fill = HeartDisease)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  labs(title = "Chest Pain Distribution by Heart Disease Presence", x = "", y = "Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1, size = 8),
+        plot.title = element_text(size = 10), # Smaller font size for title
+        axis.text.y = element_text(size = 8), # Smaller font size for y axis)
+        axis.title.x = element_text(size = 10), # Smaller font size for y-axis label
+        axis.title.y = element_text(size = 10)) # Smaller font size for y-axis label
+
+
+st_slope_grouped <- cvd_categorical |>
+  group_by(ST_Slope, HeartDisease) |>
+  summarise(count = n(), .groups = 'drop') |>
+  mutate(total = sum(count)) |>
+  mutate(percentage = count / total * 100)
+
+# Plot
+st_slope<- ggplot(st_slope_grouped, aes(x = ST_Slope, y = percentage, fill = HeartDisease)) +
+  geom_bar(stat = "identity", position = position_dodge(), show.legend = FALSE) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  labs(title = "ST Slope Distribution by Heart Disease Presence", x = "", y = "Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 8),
+        plot.title = element_text(size = 10), # Smaller font size for title
+        axis.text.y = element_text(size = 8), # Smaller font size for y axis)
+        axis.title.x = element_text(size = 10), # Smaller font size for y-axis label
+        axis.title.y = element_text(size = 10)) # Smaller font size for y-axis label
+# Display the plot
+#ggsave("cp_distribution.png", width = 8, height = 6)
+
+grid.arrange( chestP, st_slope, 
+             ncol = 1, nrow = 2)
+```
+
+The plot highlights a notably higher rate of heart disease in patients experiencing asymptomatic chest pain. Regarding the ST Slope in relation to the presence of Heart Disease, it's evident that when the ST slope is flat, the likelihood of the disease is substantially higher (no disease: disease = 16%: 30%), whereas approximately 10% of patients with the up-slope exhibit the disease.
+
+\newpage
+
+```{r}
+#| label: fig-rECGTarget-thalTarget
+#| fig-cap: Distribution of Resting ECG and Thalassemia vs. the target variable.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+
+# Convert the specified variables to factors
+cvd_categorical <- cvd_patients |>
+  mutate(ChestPainType = factor(ChestPainType, labels =c("Typical","Atypical","Non-Typical","Asymptomatic")), 
+         Thalassemia = factor(Thalassemia, labels = c("Normal", "Fixed-D", "Reversible-D" )),
+         RestingECG = factor(RestingECG, labels = c("Normal", "Abnormal", "LVH")), 
+         ExerciseAngina = factor(ExerciseAngina, labels = c("No", "Yes")), 
+         ST_Slope = factor(ST_Slope, labels = c("Up", "Flat", "Down")), 
+         FastingBSugar = factor(FastingBSugar, labels = c("Normal", "High")),
+         Sex = factor(Sex, labels = c("Female", "Male")), 
+         HeartDisease = factor(HeartDisease, labels = c("No Disease", "Disease")) 
+        )
+
+
+restECG_grouped <- cvd_categorical |>
+  group_by(RestingECG, HeartDisease) |>
+  summarise(count = n(), .groups = 'drop') |>
+  mutate(total = sum(count)) |>
+  mutate(percentage = count / total * 100)
+
+# Plot
+rECG<- ggplot(restECG_grouped, aes(x = RestingECG, y = percentage, fill = HeartDisease)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  labs(title = "Resting ECG Distribution by Heart Disease Presence", x = "", y = "Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust= 1, size = 8),
+        plot.title = element_text(size = 10), # Smaller font size for title
+        axis.text.y = element_text(size = 8), # Smaller font size for y axis)
+        axis.title.x = element_text(size = 10), # Smaller font size for y-axis label
+        axis.title.y = element_text(size = 10)) # Smaller font size for y-axis label
+
+
+thal_grouped <- cvd_categorical |>
+  group_by(Thalassemia, HeartDisease) |>
+  summarise(count = n(), .groups = 'drop') |>
+  mutate(total = sum(count)) |>
+  mutate(percentage = count / total * 100)
+
+# Plot
+thalp<- ggplot(thal_grouped, aes(x = Thalassemia, y = percentage, fill = HeartDisease)) +
+  geom_bar(stat = "identity", position = position_dodge(), show.legend = FALSE) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  labs(title = "Thalassemia Distribution by Heart Disease Presence", x = "", y = "Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 8),
+        plot.title = element_text(size = 10), # Smaller font size for title
+        axis.text.y = element_text(size = 8), # Smaller font size for y axis)
+        axis.title.x = element_text(size = 10), # Smaller font size for y-axis label
+        axis.title.y = element_text(size = 10)) # Smaller font size for y-axis label
+# Display the plot
+#ggsave("cp_distribution.png", width = 8, height = 6)
+
+grid.arrange( rECG, thalp, 
+             ncol = 1, nrow = 2)
+```
+
+The plot suggests that if the resting ECG shows signs of LVH (Left Ventricular Hypertrophy, which involves the enlargement and thickening of the heart's main pumping chamber), the likelihood of the disease is slightly elevated. Conversely, when the heart rhythm is normal, the probability of the disease is lower (approximately 31% without the disease and 18% with the disease).
+
+Thalassemia is a hereditary blood disorder passed from parents to children, characterized by insufficient production of hemoglobin (red blood cells) [@cdc2020]. When we examine the plot of Thalassemia against Heart disease, it becomes evident that individuals with normal thalassemia levels have a reduced likelihood of the disease. Conversely, for patients with the thalassemia type of reversible defect, a higher proportion have the disease (approximately 10% without the disease and 30% with the disease).
+
+#### 
+
+```{r}
+#| label: fig-sex-fbs-exang-target
+#| fig-cap: Distribution of sex and exercise-induced angina based on heart disease.
+#| fig-cap-location: bottom 
+#| code-fold: true
+
+# Convert the specified variables to factors
+cvd_categorical <- cvd_patients |>
+  mutate(ChestPainType = factor(ChestPainType, labels =c("Typical","Atypical","Non-Typical","Asymptomatic")), 
+         Thalassemia = factor(Thalassemia, labels = c("Normal", "Fixed-D", "Reversible-D" )),
+         RestingECG = factor(RestingECG, labels = c("Normal", "Abnormal", "LVH")), 
+         ExerciseAngina = factor(ExerciseAngina, labels = c("No", "Yes")), 
+         ST_Slope = factor(ST_Slope, labels = c("Up", "Flat", "Down")), 
+         FastingBSugar = factor(FastingBSugar, labels = c("Normal", "High")),
+         Sex = factor(Sex, labels = c("Female", "Male")), 
+         HeartDisease = factor(HeartDisease, labels = c("No Disease", "Disease")) 
+        )
+
+
+sex_grouped <- cvd_categorical |>
+  group_by(Sex, HeartDisease) |>
+  summarise(count = n(), .groups = 'drop') |>
+  mutate(total = sum(count)) |>
+  mutate(percentage = count / total * 100)
+
+# Plot
+sexp<- ggplot(sex_grouped, aes(x = Sex, y = percentage, fill = HeartDisease)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  labs(title = "Sex Distribution by Heart Disease Presence", x = "", y = "Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust= 1, size = 8),
+        plot.title = element_text(size = 10), # Smaller font size for title
+        axis.text.y = element_text(size = 6), # Smaller font size for y axis)
+        axis.title.x = element_text(size = 10), # Smaller font size for y-axis label
+        axis.title.y = element_text(size = 10)) # Smaller font size for y-axis label
+
+fbs_grouped <- cvd_categorical |>
+  group_by(FastingBSugar, HeartDisease) |>
+  summarise(count = n(), .groups = 'drop') |>
+  mutate(total = sum(count)) |>
+  mutate(percentage = count / total * 100)
+
+# Plot
+fbsp<- ggplot(fbs_grouped, aes(x = FastingBSugar, y = percentage, fill = HeartDisease)) +
+  geom_bar(stat = "identity", position = position_dodge(), show.legend = FALSE) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  labs(title = "Fasting Blood Sugar Distribution by Heart Disease Presence", x = "", y = "Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 8),
+        plot.title = element_text(size = 10), # Smaller font size for title
+        axis.text.y = element_text(size = 6), # Smaller font size for y axis)
+        axis.title.x = element_text(size = 10), # Smaller font size for y-axis label
+        axis.title.y = element_text(size = 10)) # Smaller font size for y-axis label
+
+exang_grouped <- cvd_categorical |>
+  group_by(ExerciseAngina, HeartDisease) |>
+  summarise(count = n(), .groups = 'drop') |>
+  mutate(total = sum(count)) |>
+  mutate(percentage = count / total * 100)
+
+# Plot
+exangp<- ggplot(exang_grouped, aes(x = ExerciseAngina, y = percentage, fill = HeartDisease)) +
+  geom_bar(stat = "identity", position = position_dodge(), show.legend = FALSE) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  labs(title = "Exercise-Induced Angina Distribution by Heart Disease Presence", x = "", y = "Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 0.5, size = 8),
+        plot.title = element_text(size = 10), # Smaller font size for title
+        axis.text.y = element_text(size = 6), # Smaller font size for y axis)
+        axis.title.x = element_text(size = 10))
+
+
+# Display the plot
+#ggsave("cp_distribution.png", width = 8, height = 6)
+
+grid.arrange(sexp, fbsp, exangp, 
+             ncol = 1, nrow = 3)
+```
+
+The plot depicting Sex versus Heart Disease reveals that the likelihood of the disease is greater in males (approximately 30% without the disease and 37% with the disease), whereas in females, it is considerably lower (approximately 24% without the disease and 8% with the disease).
+
+Regarding fasting blood sugar, a level below 120 mg/dl is considered normal. The graph illustrates that when fasting blood sugar levels are elevated, the proportion of individuals with and without the disease is roughly equal.
+
+##### Numerical Variables Pairwise Distribution
+
+To understand the variation between numerical variables, we look at the Pearson Correlation coefficients.
+
+**The Pearson correlation coefficient** is a measure of the linear correlation between two variables X and Y. It has a value between `+1` and `-1`, where `1` is total positive linear correlation, `0` is no linear correlation, and `-1` is total negative linear correlation. The formula to calculate the Pearson correlation coefficient, denoted as $r$, is:
+
+$$ r = \frac{n(\sum xy) - (\sum x)(\sum y)}{\sqrt{[n\sum x^2 - (\sum x)^2][n\sum y^2 - (\sum y)^2]}}​ $$
+
+Where:
+
+$n$ is the number of pairs of scores.
+
+-   $\sum{xy}$ is the sum of the product of paired scores.
+-   $\sum{x}$ and $\sum{y}$ are the sums of the x scores and y scores respectively.
+-   $\sum{x^2}$ and $\sum{y^2}$ are the sums of the squared x scores and squared y scores respectively.
+
+This formula essentially measures how much two variables change together, compared to how much they vary individually. It's important to note that Pearson's correlation only assesses linear relationships and is sensitive to outliers. If the relationship is not linear or the data contains outliers, Pearson's correlation might not be the appropriate measure of association.
+
+A Pearson Correlation heat-map is a graphical representation of the Pearson correlation coefficients between pairs of variables in a given dataset. In the heat-map, each cell represents the correlation coefficient between two variables. The variables are usually displayed on both the `x` and `y` axes, forming a matrix. The color of each cell indicates the strength and direction of the correlation: typically, a color gradient is used where one extreme (e.g., dark red) represents a high positive correlation `(+1)`, the opposite extreme (e.g., dark blue) represents a high negative correlation `(-1)`, and a neutral color (e.g., white or light grey) indicates no correlation `(0)`.
+
+It is an effective tool for quickly visualizing and identifying relationships between multiple variables, often used in exploratory data analysis to detect potential areas of interest for further analysis or to check assumptions in data modeling and machine learning.
+
+```{r}
+#| label: fig-corr-heatmap
+#| fig-cap: Pearson correlation coefficients between the numerical variables.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+
+# Select numerical variables along with 'Heart Disease'
+cvd_numerical <- cvd_patients|>
+   select(Age,Cholesterol, RestingBP, MaxHR, Oldpeak, HeartDisease)
+ 
+# Convert the HeartDisease to numeric in order to get correlation coefficient heatmap.  
+cvd_numerical$HeartDisease <- as.numeric(as.character(cvd_numerical$HeartDisease))
+
+
+
+# Calculate the Pearson correlation matrix
+corr_matrix <- cor(cvd_numerical, use = "complete.obs", method = "pearson")
+
+# Reshape the correlation matrix for ggplot
+melted_corr_matrix <- melt(corr_matrix)
+
+# Filter out the upper triangle and diagonal
+#melted_corr_matrix <- subset(melted_corr_matrix, Var2 > Var1)
+# Plotting the lower right part of the correlation matrix
+ggplot(melted_corr_matrix, aes(Var1, Var2, fill = value)) +
+  geom_tile() +
+  geom_text(aes(label = sprintf("%.2f", value)), vjust = 1) +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0, limit = c(-1, 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title = element_blank()) +
+  coord_fixed()
+# Display only the lower triangle of the matrix
+#melted_corr_matrix <- subset(melted_corr_matrix, Var1 != Var2)
+```
+
+## Classification: K-Nearest Neighbors (KNN) Machine Learning Algorithm
+
+The k-Nearest Neighbors (k-NN) algorithm is a straightforward and widely used classification method. It operates on a simple principle: objects with similar features are likely to belong to the same class. This is based on the assumption that similar things exist in close proximity [@classifi].
+
+**Classification Process**:
+
+-   When a new instance needs to be classified, the algorithm looks for the k closest labeled data points -- the k-nearest neighbors.
+-   The algorithm calculates the distance (such as Euclidean distance) between the new instance and every other instance in the training set.
+-   It then selects the k closest instances, where k is a user-defined constant.
+-   The classification of the new instance is determined by a majority vote of its neighbors, with the new instance being assigned to the class most common among its k nearest neighbors.
+
+The choice of k is crucial. A small value of k means that noise will have a higher influence on the result, while a large value makes the computation costly and may result in considering points that are too far away. The optimal k value is usually determined empirically via cross-validation [@datasci].
+
+**Features of k-NN**:
+
+-   k-NN is a non-parametric and lazy learning algorithm.
+-   It is simple to understand and easy to implement.
+-   k-NN can be used for both classification and regression tasks.
+
+**Applications**:
+
+-   It is widely used in real-life scenarios such as finance (for credit scoring), healthcare (for medical diagnosis), education, recommendation systems, and more. The algorithm gets significantly slower as the number of examples and/or predictors/independent variables increase [@classifi].
+
+To perform the K-NN classification algrithm, I factor the the responsevariable `HeartDisease` because its class was numerical as other variables.
+
+```{r}
+#| label: factored-HeartDisease-var
+#| code-fold: true
+
+
+#Convert the response variable to factor 
+#head(cvd_patients)
+cvd_patients_factor_target <- cvd_patients|>
+  mutate(HeartDisease = factor(HeartDisease, levels = c(0, 1), labels = c("No", "Yes")))
+#head(cvd_patients)
+```
+
+I recheck for the missing values. There's no missing values because that was handled in the pre-processing section.
+
+```{r}
+#| label: rechecking-for-missing
+#| code-fold: true
+
+
+missing_values <- sapply(cvd_patients_factor_target, function(x) sum(is.na(x)))
+
+# Print the result
+#print(missing_values)
+```
+
+Then, I scale the data using the `scale()` function from the `caret` package .
+
+```{r}
+#| label: tbl-scaled
+#| tbl-cap: View of the scaled data by normalizing each variable.
+#| tbl-cap-location: bottom
+#| code-fold: true
+
+# scale the data excluding the response variable using dplyr
+cvd_patients_scld <- cvd_patients_factor_target |>
+  mutate(across(.cols = 1:13, .fns = ~ scale(.)))
+  
+
+cvd_patients_scld|>
+  slice_head(n = 6)|>
+  gt()
+
+
+```
+
+\newpage
+
+#### Create the k-NN model: k=5
+
+```{r}
+#| label: tbl-classification-confusion
+#| tbl-cap: Confusin matrix obtained from KNN model
+#| tbl-cap-location: bottom
+#| code-fold: true
+
+
+
+#Split the dataset into training and testing sets. 
+#The data is partitioned based on the num variable, which is the target variable. 
+#The `createDataPartition` function from the caret package is used to create a stratified random split of the data.
+#Stratification ensures that the proportion of each category in the num variable is approximately the same in both the training and testing datasets.
+
+set.seed(123) # For reproducibility
+
+indexes <- createDataPartition(cvd_patients_scld$HeartDisease, p = 0.7, list = FALSE)
+train_data <- cvd_patients_scld[indexes, ]
+test_data <- cvd_patients_scld[-indexes, ]
+
+
+knn_model <- knn(train = train_data[, !names(train_data) %in% 'HeartDisease'], 
+                 test = test_data[, !names(test_data) %in% 'HeartDisease'], 
+                 cl = train_data$HeartDisease, k = 5)
+
+
+#Evaluate the model using the testing set.
+#A confusion matrix is a table used to describe the performance of a classification model on a set of test data for
+#which the true values are known.
+#It tabulates the number of correct and incorrect predictions made by the model compared with the actual classifications
+#in the test data, thus allowing you to calculate metrics like accuracy, precision, recall, and F1 score.
+#The rows of the matrix usually represent the actual classes, and the columns represent the predictions made by the model.
+#Meaning of "diag" in the Accuracy Calculation:
+
+#diag(confusionMatrix) extracts the diagonal elements of the confusion matrix. These elements represent the number
+#of instances where the predicted class matches the actual class (i.e., true positives and true negatives).
+#sum(diag(confusionMatrix)) gives the total count of correct predictions made by the model.
+
+confusionMatrix <- table(Predicted = knn_model, Actual = test_data$HeartDisease)
+print(confusionMatrix)
+
+
+
+```
+
+Evaluation of the Model
+
+```{r}
+#| label: evaluation-knn-rounds
+
+# Calculate accuracy
+accuracy <- round((sum(diag(confusionMatrix)) / sum(confusionMatrix))*100,2)
+print(paste("The accuracy of the model is:", accuracy))
+```
+
+Visualize the results
+
+```{r}
+#| label: fig-knn-modelpred-vs-actual
+#| fig-cap: Classification of patients using the K-Nearest Neighbor algorithm. 
+#| fig-cap-location: bottom
+#| code-fold: true
+
+
+# Create a simple visualization 
+ggplot(as.data.frame(test_data$HeartDisease), aes(x = test_data$HeartDisease)) +
+  geom_bar(aes(fill = knn_model)) +
+  labs(title = "KNN Model Predictions vs Actual", x = "Actual Category", y = "Predicted") +
+  theme_minimal()
+```
+
+### Model Tuning
+
+Model tuning refers to the process of adjusting the parameters of a machine learning model to improve its performance or make it better suited to the data it is working with [@datascia].
+
+In KNN, the choice of the k-value (the number of nearest neighbors to consider) is a critical parameter that can significantly influence the model's performance. The key aspects of tuning the k-value in KNN are:
+
+1.  **Balance Between Overfitting and Underfitting**: A very small k-value can make the model sensitive to noise in the data, leading to overfitting. Conversely, a very large k-value can smooth out the predictions too much, leading to underfitting [@lee].
+
+2.  **Validation Approach**: Typically, the best k-value is found through validation techniques like cross-validation, where the model's performance is tested on different subsets of the data for a range of k-values.
+
+    -   **Cross-Validation**: Use k-fold cross-validation to evaluate the performance of the KNN model for different values of k. This involves splitting the training dataset into k smaller sets (or folds), then training the model k times, each time using a different fold as the validation set and the remaining data as the training set \[@leea\].
+
+```{r}
+#| label: model-performance-cross-validation
+#| code-fold: true
+
+set.seed(123) # For reproducibility
+# Define training control
+train_control <- trainControl(method = "cv", number = 10)
+
+# Train the model using a range of k values
+k_values <- data.frame(k = 1:20)
+knn_fit <- train(HeartDisease ~ ., data = train_data, method = "knn", tuneGrid = k_values, trControl = train_control)
+
+# Print the results
+print(knn_fit)
+```
+
+### **Interpretation of the Result:**
+
+**Optimal k-Value**: The model tuning process identified that **`k = 13`** as the optimal number of neighbors for the KNN algorithm. This means that when making a prediction for a new data point, the algorithm considers the `13` nearest data points in the training set and bases its prediction on these.
+
+**Accuracy**: The choice of **`k = 13`** was based on achieving the highest accuracy. Accuracy is a measure of how often the model correctly predicts the target variable. A high accuracy with this k-value suggests that the model is generally effective in classifying the data correctly.
+
+**Kappa Statistic**: A Kappa of `0.722` is relatively high, suggesting good agreement between the model predictions and the actual values. In the context of Kappa, where `1` is perfect agreement and `0` is no better than chance, a value of `0.722` indicates that the model's predictions are substantially in agreement with the actual values, and much of this agreement is not due to chance.
+
+### K-Means Clustering
+
+\
+K-means clustering is a popular unsupervised machine learning algorithm used for partitioning a dataset into a set of distinct, non-overlapping subgroups or clusters. We employ the K-means clustering algorithm in the heart disease dataset to uncover hidden groupings or clusters among the data points. By identifying these clusters, we can gain insights into potential subpopulations of patients who share similar characteristics. This unsupervised machine learning method allows us to better understand the dataset's inherent structure and may help in tailoring treatments or interventions for specific patient groups.
+
+The algorithm aims to partition the data such that the variance within each cluster is minimized [@k-means].
+
+**Algorithm Steps**:
+
+-   **Initialization**: Start by randomly selecting k centroids, where k is the desired number of clusters.
+-   **Assignment Step**: Assign each data point to the nearest centroid, creating clusters.
+-   **Update Step**: Recalculate the centroids as the mean of all data points in each cluster.
+-   **Repeat**: Repeat the assignment and update steps until the centroids no longer change significantly, indicating that the clusters are stable [@k-means].
+
+**Choosing k**: The number of clusters, k, is a user-defined parameter and can be determined using various methods, such as the Elbow Method, Silhouette Analysis, or domain knowledge.
+
+K-means clustering is commonly used for market segmentation, pattern recognition, image compression, and similar applications where data needs to be grouped. [@k-means]
+
+### Selecting the Optimal Number of Clusters (k)
+
+Selecting the optimal number of clusters (k) in k-means clustering is a crucial step, and one common method to determine this is by using the "Elbow Method", often visualized through a scree plot. The Elbow Method involves running k-means clustering on the dataset for a range of values of k (for example, `k` from `1` to `10`), and then for each value of `k` calculating the sum of squared distances from each point to its assigned center. When these overall dispersions are plotted against the number of clusters, the "elbow" of the curve represents an optimal value for k [@datasci].
+
+The within-cluster sum of squares (WSS), also known as the "within-cluster variance" or "inertia," is a measure used to evaluate the quality of clustering in the k-means algorithm. It quantifies the compactness or tightness of clusters. The formula for WSS is as follows:
+
+For a given cluster k, the WSS is calculated as the sum of the squared Euclidean distances between each data point ($x_i$) in the cluster and the centroid ($c_i$) of that cluster. This is done for all data points within the cluster:
+
+$$WSS_k = \sum_{i = 1}^{n_k}(x_i -c_i)^2$$ Where:
+
+-   $WSS_k$ is the within-cluster sum of squares for cluster k.
+-   $n_k$ is the number of data points in cluster k.
+-   $x_i$ represents each data point in cluster k.
+-   $c_i$ is the centroid (mean) of cluster k.
+
+To obtain the total WSS for a k-means clustering with 'k' clusters, sum the WSS values for all clusters: The total WSS:
+
+$$ Total WSS = \sum_{k = 1}^{K}WSS_k $$
+
+Plot these Within-cluster Sum of Square values against the number of clusters k.The point where the plot starts to bend and forms an "elbow" is considered as an indicator of the appropriate number of clusters [@datascic].
+
+```{r}
+#| label: fig-scree-plot
+#| fig-cap: Scree plot to find the optimal k-value.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+set.seed(123)
+# Drop the 'HeartDisease' column for clustering
+cvd_patients_clustering <- cvd_patients |>
+  select(-HeartDisease)
+
+# Calculate total within-cluster sum of square
+wss <- sapply(1:10, function(k){
+  kmeans(cvd_patients_clustering, centers = k, nstart = 25)$tot.withinss
+})
+
+# Create a scree plot with whole number tick values on the x-axis
+k_values <- 1:10
+plot_df <- data.frame(k_values, wss)
+ggplot(plot_df, aes(x = k_values, y = wss)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Scree Plot for Optimal k", x = "Number of Clusters (k)", y = "Total Within-Cluster Sum of Squares") +
+  scale_x_continuous(breaks = 1:10) +  # Setting x-axis breaks to whole numbers
+  theme_minimal()
+```
+
+The scree plot indicates that the optimal k-value is two. However, it seems like three would be the right as well. To confirm the right k-value, we use alternative method the **Average Silhouette** method. It is used to determine the optimal number of clusters (k) in unsupervised clustering, such as K-means. It measures how similar data points are to their own cluster compared to other clusters. Higher scores indicate better-defined clusters, and the k with the highest average score is chosen as the optimal number of clusters [@kassambara].
+
+```{r}
+#| label: fig-Silhouette-method-plot
+#| fig-cap: Silhouette method plot to determine the optimal k-value.
+#| fig-cap-location: bottom
+
+set.seed(123)
+# Silhouette method
+fviz_nbclust(cvd_patients_clustering, kmeans, method = "silhouette")+
+labs(subtitle = "Silhouette method")+ theme_minimal()
+```
+
+We choose the optimal k-value $2$ after performing the Elbow and the average Silhouette methods.
+
+K-means is a method used to group data, like patient information, into clusters. This method starts by randomly choosing points in the data to form the initial clusters, which means every time we run k-means, we might get different clusters [@k-meansc].
+
+For our heart disease data, it's important that the clusters are not just random groupings. We want to see if similar patients are grouped together consistently, even when we start the k-means algorithm from different points. If the same patients end up in different clusters each time, it might mean that the clusters don't really tell us anything meaningful about the patients. For this reason we run the algorithm twice.
+
+### 
+
+```{r}
+#| label: k-means-clustering-round1
+#| code-fold: true
+
+# Performing Round-1 K-Means Clustering
+
+# Drop the 'HeartDisease' column for clustering
+cvd_patients_clustering <- cvd_patients |>
+  select(-HeartDisease)
+
+# Scale the data. The clustering is performed on the scaled data, which is important because k-means clustering is sensitive to the scale of the features. The scaling ensures that all features contribute equally to the distance calculations used in the clustering.
+cvd_patients_scaled <- scale(cvd_patients_clustering)
+
+# Perform k-means clustering - Example with 3 clusters
+set.seed(123) # for reproducibility
+kmeans_result_round1 <- kmeans(cvd_patients_scaled, centers = 2, nstart = 25)
+#In k-means clustering, nstart refers to the number of random starts. The k-means algorithm is sensitive to the initial placement of the centroids. 
+#To mitigate this, nstart specifies how many times the algorithm should be run with different random initializations. The best output in terms of within-cluster sum of squares is kept. This helps in finding a more robust clustering solution.
+
+
+# Add the cluster assignments to your original data
+cvd_patients_clustered <- cvd_patients|>
+  mutate(cluster_round1 = kmeans_result_round1$cluster)
+#cvd_patients_clustered$cluster_round1 <- kmeans_result_round1$cluster
+
+# You can explore the clustering result
+cluster_distribution <- table(cvd_patients_clustered$cluster_round1)
+#print(cluster_distribution)
+```
+
+We perform k-means clustering twice on the heart disease data by changing the `nstart` value in the second round which refers to the number of random initialization of centers. The k-means algorithm is sensitive to the initial placement of the centroids [@k-means]. To mitigate this, `nstart` specifies how many times the algorithm should be run with different random initialization. The best output in terms of within-cluster sum of squares is kept. This helps in finding a more robust clustering solution. By comparing the results of this second round with our first round, we can check if the groups of patients are similar. This helps us understand if our clustering really makes sense.
+
+```{r}
+#| label: kmeans-clustering-round2
+#| code-fold: true
+
+#Performing a Second K-Means Clustering on Heart Disease Data
+set.seed(123)
+kmeans_result_round2 <- kmeans(cvd_patients_clustering, centers = 2, nstart = 50)  # changing nstart for variation
+#cvd_patients$cluster_round2 <- kmeans_result_round2$cluster
+
+# Add the cluster assignments to the clustered (original) data 
+cvd_patients_clustered$cluster_round2 <- kmeans_result_round2$cluster
+#cvd_patients_clustered|>
+ # mutate()
+
+# You can explore the clustering result
+cluster_distribution2 <- table(cvd_patients_clustered$cluster_round2)
+#print(cluster_distribution2)
+
+```
+
+#### **The K-Means Clustering Results** {#sec-interpreting-the-k-means-clustering-results}
+
+1.  **Cluster Sizes in Each Round**:
+
+|        | Cluster 1 | Cluster 2 |
+|--------|-----------|-----------|
+| Round1 | 114       | 189       |
+| Round2 | 111       | 192       |
+
+#### **Consistency of Clusters**:
+
+-   To determine if the same patients are grouped together in both rounds, the cluster assignments of individual patients across the two rounds would be compared.
+
+-   This can be done by checking how many patients in each cluster from Round 1 are also in the same or different clusters in Round 2.
+
+#### **Checking Cluster Consistency :**
+
+```{r}
+#| label: tbl-cluster-consistency-checking-table
+#| tbl-cap: The contingency table to compare the cluster assignments.
+#| fig-cap-location: top
+#| code-fold: true
+
+
+
+# cvd_patients has cluster assignments from both rounds
+cont_table <- table(Round1 = cvd_patients_clustered$cluster_round1, Round2 = cvd_patients_clustered$cluster_round2)
+#con_table
+```
+
+|           |           |           |
+|-----------|-----------|-----------|
+| Round 1   | Round 2   |           |
+|           | Cluster 1 | Cluster 2 |
+| Cluster 1 | **51**    | 67        |
+| Cluster 2 | 60        | **125**   |
+
+**Interpreting the Contingency Table:**
+
+-   If many patients from a cluster in Round 1 are in the same cluster in Round 2, this suggests consistency.
+-   If patients from a cluster in Round 1 are spread across different clusters in Round 2, this suggests inconsistency.
+
+**Diagonal Cells in the Contingency Table:**
+
+Each diagonal cell in the contingency table represents the number of data points (patients in your case) that were in the same cluster in both rounds of clustering. For example, the cell at the intersection of Cluster 1 in Round 1 and Cluster 1 in Round 2 shows how many patients remained in Cluster 1 across both rounds.
+
+If the diagonal cells have high counts compared to the off-diagonal cells, this suggests a high level of consistency. It means that a significant number of patients were grouped into the same cluster in both rounds of clustering.
+
+Conversely, if the off-diagonal cells have higher counts than the diagonal cells, it indicates that many patients shifted to different clusters in the second round, suggesting variability or instability in the clustering.
+
+Conclusion for K-Means Clustering
+
+In the presented contingency table, the diagonal values (51, 125) represent lower counts compared to the off-diagonal ones. Although 125 instances were retained in cluster 2 during the second round, the high count of diagonal (displaced) values suggests that K-Means clustering may not be effective or robust for this dataset, given its lack of consistent results.
+
+#### Clustering Statistics
+
+After performing k-means clustering, calculating statistics for each cluster is crucial for interpretation. This typically involves looking at the mean, median or standard deviation values of key variables within each cluster.
+
+Statistics for Round 1 Clustering:
+
+```{r}
+#| label: tbl-round1-statistics
+#| tbl-cap: Statistics of numerical variables for Round-1 Clustering.
+#| tbl-cap-location: bottom
+
+#Convert categorical variables to factors in cvd_patients_clustered dataset
+
+cvd_patients_clustered_fctrd <- cvd_patients_clustered |>
+  mutate(across(c(Sex, ChestPainType, FastingBSugar, ExerciseAngina,  ST_Slope, MajorVessels, Thalassemia, HeartDisease, cluster_round1, cluster_round2), as.factor))
+
+
+
+# Calculate mean values for each cluster
+#Group data by cluster and then summarize each group.
+cluster_means <- cvd_patients_clustered_fctrd |>
+  group_by(cluster_round1) |>
+   #summarise(across(where(is.numeric), ~ mean(., na.rm = TRUE)))
+  summarise(across(where(is.numeric), ~ round(mean(., na.rm = TRUE), 2))) |>
+  mutate(statistic = "mean")
+
+
+# Alternatively, calculate median values
+cluster_sd <- cvd_patients_clustered_fctrd |>
+  group_by(cluster_round1)|>
+  summarise(across(where(is.numeric),~ round(sd(., na.rm = TRUE), 2))) |>
+  mutate(statistic = "sd")
+
+# Add a column to label these as 'median'
+#cluster_medians$statistic <- 'median'
+
+# Combine the mean and median data frames for easier comparison
+combined_stats <- rbind(cluster_means, cluster_sd)
+
+# Print the combined data frame
+# print(combined_stats)
+combined_stats|>
+  gt()
+```
+
+It can be observed that in cluster 1, the averages for age, resting blood pressure, cholesterol levels, resting electrocardiographic readings, and oldpeak are higher, whereas the average maximum heart rate is lower.
+
+Statistics for Round 2 Clustering:
+
+```{r}
+#| label: tbl-round2-statistics
+#| tbl-cap: Statistics of numerical variables for Round-2 clustering
+#| fig-cap-location: bottom
+
+
+# Calculate mean values for each cluster in round 2
+cluster_means <- cvd_patients_clustered_fctrd |>
+  group_by(cluster_round2) |>
+  summarise(across(where(is.numeric), ~ round(mean(., na.rm = TRUE), 2))) |>
+  mutate(statistic = "mean")
+
+# Alternatively, calculate median values
+cluster_sd <- cvd_patients_clustered_fctrd %>%
+  group_by(cluster_round2) %>%
+  summarise(across(where(is.numeric),~ round(sd(., na.rm = TRUE), 2))) |>
+  mutate(statistic = 'sd')
+
+# Combine the mean and median data frames for easier comparison
+combined_stats2 <- rbind(cluster_means, cluster_sd)
+
+# Print the combined data frame
+#print(combined_stats)
+combined_stats2|>
+  gt()
+```
+
+### Frequency Distribution of Categorical Variables for Each Cluster of round-2
+
+This frequency distribution allows us to analyze how categorical variables are distributed across the different clusters, which can provide insights into the characteristics of each cluster. For instance, if a particular category of a variable like **`ChestPainType`** is over-represented in one cluster compared to others, it might suggest a specific health profile or risk factor associated with that cluster.
+
+```{r}
+#| label: factorized-clustered-data
+#| code-fold: true
+
+cvd_Clustered_categorical <- cvd_patients_clustered |>
+  mutate(ChestPainType = factor(ChestPainType, labels =c("Typical","Atypical","Non-Typical","Asymptomatic")), 
+         Thalassemia = factor(Thalassemia, labels = c("Normal", "Fixed-Defect", "Reversible-Defect" )),
+         RestingECG = factor(RestingECG, labels = c("Normal", "Abnormal", "LVH")), 
+         ExerciseAngina = factor(ExerciseAngina, labels = c("No", "Yes")), 
+         ST_Slope = factor(ST_Slope, labels = c("Up", "Flat", "Down")), 
+         FastingBSugar = factor(FastingBSugar, labels = c("Normal", "High")),
+         Sex = factor(Sex, labels = c("Female", "Male")), 
+         HeartDisease = factor(HeartDisease, labels = c("No Disease", "Disease")),
+         MajorVessels = factor(MajorVessels)
+        )
+#head(cvd_Clustered_categorical)
+```
+
+```{r}
+#| code-fold: true
+#| label: tbl-cluster-round2-freqTable
+#| tbl-cap: Frequency distribution of categorical variables based on K-means round-2 clusters.
+#| tbl-cap-location: top
+
+
+#  Frequency distribution table of categorical variables to analyze the K-Means clusters.
+
+#categorical variable names
+categorical_vars <- c("HeartDisease", "Sex", "ChestPainType", "FastingBSugar", "ExerciseAngina",  "ST_Slope", "MajorVessels", "Thalassemia")
+
+# Calculate frequency distribution for each categorical variable in each cluster
+frequency_distributions <- cvd_Clustered_categorical |>
+  select(cluster_round2, all_of(categorical_vars)) |>
+  pivot_longer(cols = -cluster_round2, names_to = "category", values_to = "value") |>
+  group_by(cluster_round2, category, value) |>
+  summarise(frequency = n(), .groups = 'drop')
+
+# View the results
+#frequency_distributions |>
+ # gt()
+
+head(frequency_distributions)
+```
+
+```{r}
+#| label: fig-cluster-heartD-sex-round2
+#| fig-cap: Heart Disease and sex distribution in round-2 clusters.
+#| fig-cap-location: bottom 
+
+
+
+vars_part1 <- c("HeartDisease", "Sex")  # Replace with your actual variable names
+vars_part2 <- c("ChestPainType", "ST_Slope")  # Replace with your actual variable names
+vars_part3 <- c("ExerciseAngina",  "FastingBSugar") 
+vars_part4 <-c("MajorVessels", "Thalassemia")
+
+
+# Subset the data for the first part
+fd_part1 <- frequency_distributions %>%
+  filter(category %in% vars_part1)
+
+# Subset the data for the second part
+fd_part2 <- frequency_distributions %>%
+  filter(category %in% vars_part2)
+
+
+# Subset the data for the third part
+fd_part3 <- frequency_distributions %>%
+  filter(category %in% vars_part3)
+
+
+# Subset the data for the fourth part
+fd_part4 <- frequency_distributions %>%
+  filter(category %in% vars_part4)
+
+
+# Plot for the first part (variables 1 and 2)
+ggplot(fd_part1, aes(x = value, y = frequency, fill = factor(cluster_round2))) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  facet_wrap(~ category, scales = "free", ncol = 1) +
+  labs(title = "Cluster Comparison forHeart Disease and Sex",
+       x = "Category Value", y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```
+
+```{r}
+#| label: fig-cluster-chestP-slope-round2
+#| fig-cap: Distribution of chest pain and slope based on the round-2 clusters.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+# Plot for the second part (variables 3 and 4)
+ggplot(fd_part2, aes(x = value, y = frequency, fill = factor(cluster_round2))) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  facet_wrap(~ category, scales = "free", ncol = 1) +
+  labs(title = "Cluster Comparison for Chest Pain Types and ST Slope",
+       x = "Category Value", y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+#| label: fig-cluster-exerAngina-fastingBS-round2
+#| fig-cap: Distribution of exercise-induced angina and fasting blood sugar on the roun-2 clusters.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+# Plot for the first part (variables 1 and 2)
+ggplot(fd_part3, aes(x = value, y = frequency, fill = factor(cluster_round2))) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  facet_wrap(~ category, scales = "free", ncol = 1) +
+  labs(title = "Cluster Comparison for Exercise-Induced Angina and Fasting Blood Sugar",
+       x = "Category Value", y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+#| label: fig-cluster-majorVessels-thalassemia-round2
+#| fig-cap: Distribution of major vessels and thalassemia on the round-2 clusters.
+#| fig-cap-location: bottom
+#| code-fold: true
+#
+# Plot for the first part (variables 1 and 2)
+ggplot(fd_part4, aes(x = value, y = frequency, fill = factor(cluster_round2))) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  facet_wrap(~ category, scales = "free", ncol = 1) +
+  labs(title = "Cluster Comparison for Major Vessels and Thalassemia",
+       x = "Category Value", y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+```
+
+### **Visualization of K-Means Clusters**
+
+I visualize the clusters obtained by K-means algorithm using Principal Component Analysis (PCA) in order to uncover patterns and groupings that might not be apparent in the high-dimensional space. PCA is a method used to reduce the number of variables in a dataset while retaining most of the original information. It does this by transforming the original variables into a new set of variables, the principal components, which are orthogonal (uncorrelated) and account for decreasing proportions of the total variance in the data [@principaa].
+
+```{r}
+#| label: fig-clustering1-visl
+#| fig-cap: K-means clustering round-1. PCA is used to visualize the clusters with two key components of the dataset.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+
+# Example visualization using PCA for dimensionality reduction
+pca_result <- prcomp(cvd_patients_clustering)
+cvd_patients_pca <- data.frame(pca_result$x[,1:2], cluster_round1 = cvd_patients_clustered$cluster_round1)
+
+ggplot(cvd_patients_pca, aes(x = PC1, y = PC2, color = as.factor(cluster_round1))) +
+  geom_point() +
+  labs(title = "Cluster Visualization Based on PCA (Round 1)")
+
+
+```
+
+```{r}
+#| label: fig-clustering2-visl
+#| fig-cap: K-means clustering round-2.by PCA of the dataset.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+
+# Example visualization using PCA for dimensionality reduction
+pca_result <- prcomp(cvd_patients_clustering)
+cvd_patients_pca <- data.frame(pca_result$x[,1:2], cluster_round2 = cvd_patients_clustered$cluster_round2)
+
+ggplot(cvd_patients_pca, aes(x = PC1, y = PC2, color = as.factor(cluster_round2))) +
+  geom_point() +
+  labs(title = "Cluster Visualization Based on PCA (Round 2)")
+```
+
+### **Visualization of PCA in the Context of K-Means Clustering**
+
+Principal Component Analysis (PCA) is a powerful technique used in data analysis for dimensionality reduction. It transforms high-dimensional data into a lower-dimensional form, making it easier to visualize and interpret, especially when dealing with complex datasets like those in healthcare [@principa].
+
+In the context of k-means clustering, particularly with datasets involving multiple variables related to heart disease, PCA serves as an invaluable tool for several reasons:
+
+**Simplifying Data Visualization**: PCA reduces the dimensions of the data to the two most informative components (PC1 and PC2). This simplification allows us to create a two-dimensional scatter plot, where each point represents a patient, and the clustering results can be visually assessed [@principa].
+
+**Understanding Data Structure**: By visualizing the data in the reduced PCA space, we can observe how the patients are grouped by the k-means algorithm. Clusters that are distinct and well-separated in the PCA plot suggest that k-means has successfully identified meaningful patterns in the data.
+
+**Interpreting Clusters**: The PCA plot can help in interpreting the characteristics of the clusters. For instance, if patients with certain risk factors (like high cholesterol or age) are predominantly found in one cluster, it could indicate a group with a higher risk of heart disease.
+
+**Facilitating Decision Making**: The clarity provided by PCA visualization aids in making informed decisions, such as adjusting the number of clusters in k-means or identifying key variables for further analysis.
+
+In summary, PCA visualization in the context of k-means clustering provides a clear, simplified view of how patients are grouped based on their health data. This approach not only aids in validating the clustering results but also offers insights into the underlying structure of the data, which is crucial for accurate interpretation and subsequent healthcare decisions.
+
+To better understand the principal components we look at PCA Loadings. PCA loadings show how much each original variable contributes to each principal component [@principa]. This helps in understanding what characteristics (variables) are most influential in differentiating the clusters.
+
+```{r}
+#| label: tbl-exracting-PCA-loadings
+#| tbl-cap: Contribution rates of each variable to PC1 and PC2.
+#| tbl-cap-location: bottom
+#| code-fold: true
+
+
+# Extract loadings for PC1 and PC2
+pca_loadings <- pca_result$rotation[, 1:2]
+
+# View the loadings
+print(pca_loadings)
+
+```
+
+#### **Visualizing PCA Loadings**
+
+A bar plot to display the contribution of each original variable to **`PC1`** and **`PC2`**:
+
+```{r}
+#| label: fig-pca-loadings-Visl
+#| fig-cap: The bar plot displays the contribution of each original variable to PC1 and PC2.
+#| fig-cap-location: bottom
+#| code-fold: true
+
+
+# Convert the loadings to a long format for plotting
+loadings_long <- as.data.frame(pca_loadings) %>% 
+  tibble::rownames_to_column("variable") %>%
+  pivot_longer(cols = -variable, names_to = "component", values_to = "loading")
+
+# Plot
+pca <-  ggplot(loadings_long, aes(x = variable, y = loading, fill = component)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "PCA Loadings for PC1 and PC2", x = "Variable", y = "Loading") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+print(pca)
+```
+
+PCA has reduced the multidimensional data into two components that capture the most variance. These components are linear combinations of the original variables, with loadings indicating the contribution of each variable.
+
+From the PCA loadings we see that PC1 seems to be heavily influenced by cholesterol, suggesting that this component might be capturing aspects of patient health related to metabolic factors. While PC2, influenced significantly by both MaxHR and age (but in opposite directions), might be capturing a combination of cardiovascular efficiency (reflected by heart rate) and age-related factors.
+
+The PCA loadings and subsequent cluster visualization offer insights into the underlying characteristics of patient groups. PC1 primarily reflects cholesterol-related variations, while PC2 captures a blend of heart rate and age factors. This dimensional reduction, coupled with k-means clustering, provides a nuanced understanding of patient health profiles, potentially aiding in targeted healthcare strategies. However, these findings should be considered exploratory and validated further with clinical expertise to ensure their relevance and accuracy in medical research or practice.
+
+#### Conclusion:
+
+In our analysis of the **`heart Disease`** dataset using k-means clustering with two clusters, we observed moderate consistency in patient groupings across two rounds of clustering. While a significant portion of patients were grouped into the same cluster in both rounds, indicating potentially meaningful groupings, there was also notable movement between clusters. This suggests that while there may be some stable patterns in the data, there is also a degree of variability in how patients are grouped. These findings highlight the importance of considering multiple rounds of clustering and possibly exploring additional clustering methods or incorporating more domain-specific knowledge for a comprehensive understanding of patient categorizations.
+
+## **Hierarchical Clustering**
+
+Hierarchical clustering is a method of cluster analysis that seeks to build a hierarchy of clusters. It is a widely used and effective approach in data analysis for grouping data points into a tree-like structure based on their similarity [@hierarch]. Hierarchical clustering involves creating a hierarchy of clusters, which is typically visualized in a dendrogram.
+
+There are two main types:
+
+-   **Agglomerative (Bottom-Up)**: Each observation starts in its own cluster, and pairs of clusters are merged as one moves up the hierarchy.
+-   **Divisive (Top-Down)**: All observations start in one cluster, and splits are performed recursively as one moves down the hierarchy.
+
+In the agglomerative approach, each data point starts as a single cluster and then pairs of clusters are successively merged based on their distance or similarity.
+
+Common linkage criteria for merging clusters include methods like Ward's method, maximum or complete linkage, average linkage, and single linkage.
+
+The results of hierarchical clustering are often represented in a dendrogram, a tree-like diagram that records the sequences of merges or splits. The height (y-axis) of the dendrogram is the distance for the split or merge.
+
+Hierarchical clustering is used in various fields such as biology (for gene and protein sequencing), marketing (customer segmentation), and document clustering in information retrieval.
+
+**Advantages**:
+
+-   No need to specify the number of clusters in advance.
+
+-   The dendrogram provides a visual summary of the clustering process, which can be an informative tool for understanding the data.
+
+**Limitations**:
+
+-   Sensitive to noise and outliers.
+
+-   Hierarchical clustering can be more computationally expensive than other clustering methods, like k-means.
+
+Hierarchical clustering's ability to provide intuitive dendrograms and its flexibility (no need to pre-specify the number of clusters) make it a popular choice for exploratory data analysis.
+
+In hierarchical clustering, different linkage methods are used to determine the distance (similarities, dissimilarities) between the sets of observations. The choice of linkage method can significantly affect the outcomes of the clustering process. Here's a brief description of three common linkage methods: Ward's method, Complete linkage, and Average linkage [@msc2023].
+
+1.  Ward's Method (ward.D2): Ward's method, particularly the ward.D2 variant, is an agglomerative clustering approach. It minimizes the total within-cluster variance. At each step, the pair of clusters with the minimum between-cluster distance are merged. Application: This method is particularly useful when the clusters are of approximately similar sizes and when you want to minimize the variance within clusters. Characteristics: Tends to create more compact, equally sized clusters, which can be advantageous for certain types of data but may force some natural groupings to merge [@msc2023] .
+
+2.  Complete Linkage: Complete linkage clustering, also known as the maximum or farthest neighbor method, defines the distance between two clusters as the maximum distance between any single data point in the first cluster and any single data point in the second cluster. Application: It's well-suited for separating clusters that are relatively compact and far from each other. Characteristics: This method can often reveal the actual structure of the data but might also be sensitive to outliers, resulting in clusters that are influenced by the most dissimilar members [@hierarcha] .
+
+3.  Average Linkage: In average linkage clustering, the distance between two clusters is defined as the average distance between each data point in the first cluster and every data point in the second cluster. Application: It is useful for creating clusters where each member is similar on average to the members of its cluster. Characteristics: This method provides a balance between the sensitivity of the complete method to outliers and the tendency of the Ward's method to create clusters of similar sizes. However, it can sometimes create chaining effects where clusters end up being elongated and straggly [@msc2023].
+
+    In this analysis, we will perform the hierarchical clustering using the two most common linkage methods (the ward and the complete linkage), and we will compare them.
+
+```{r}
+#| label: fig-clustering-hierarchical-ward-method
+#| fig-cap: Hierarchical clustering using "ward.D2" method.
+#| fig-cap-location: bottom
+
+# We use factoextra package for vizualization
+library(factoextra)
+
+#  Hierarchical clustering by the ward method
+
+set.seed(123) # for reproducibility (consistency)
+
+# Drop the 'HeartDisease' column for clustering because it's unsuperwised learning
+cvd_patients_clustering <- cvd_patients |>
+  select(-HeartDisease)
+
+# Scale the data.  The scaling ensures that all features contribute equally to the distance calculations used in the clustering.
+cvd_patients_scaled <- scale(cvd_patients_clustering)
+
+
+# Hierarchical Clustering
+#By default, the function dist() computes the Euclidean distance between objects.
+hc <- hclust(dist(cvd_patients_scaled), method = "ward.D2")
+
+# Convert hclust to dendrogram
+dend <- as.dendrogram(hc)
+
+# Plot the dendrogram
+plot(dend)
+
+# Color branches by clusters
+#dend_colored <- color_branches(dend, k = 5) # 'k' is the number of clusters
+
+# Plot the Dendrogram
+#plot(hc, hang = -1, labels = cvd_patients$HeartDisease)
+
+# Plot the colored dendrogram
+#plot(dend_colored)
+# Cutting the Dendrogram
+#clusters <- cutree(hc, k = 2) # Adjust 'k' based on desired number of clusters
+```
+
+According to the dendogram, the best height to cut the dendogram is 25-30 referring to two clusters. This result confirms the same result for the best number of clusters that we obtained by the Scree plot when we perform the K-means clustering.
+
+Now, let's see the table that shows the number of observation in each cluster.
+
+```{r}
+#| label: tbl-hierarchical-clustering-ward-method
+#| tbl-cap: Hierarchical Clustering Table Ward.D2 Method 
+#| tbl-cap-location: bottom
+
+set.seed(123)
+
+# Cutting the Dendrogram
+hclusters <- cutree(hc, k = 2) # Adjust 'k' based on desired number of clusters
+#table(hclusters)
+
+```
+
+| Cluster 1 | Cluster 2 |
+|-----------|-----------|
+| 116       | 187       |
+
+The cluster assignment for each variable.
+
+```{r}
+#| label: cluster-assignment-observations-ward-method
+
+hclusters
+```
+
+The dendogram with two colored clusters
+
+```{r}
+#| label: fig-colored-dendogram-ward-method
+#| fig-cap: Colored Dendogram for the Two Hierarchical Clusters by ward.D2 Method 
+#| tbl-cap-location: bottom
+
+# Color branches by clusters
+#dend_colored <- color_branches(dend, k = 2) # 'k' is the number of clusters
+
+# Plot the Dendrogram
+#plot(hc, hang = -1, labels = cvd_patients$HeartDisease)
+fviz_dend(dend, k=2, cex = 0.5, color_labels_by_k = TRUE, rect = TRUE)
+
+
+```
+
+The Clusters obtained hierarchically by the ward.D2 method:
+
+```{r}
+#| label: fig-colored-clusters-ward-method
+#| fig-cap: Colored Two Hierarchical Clusters by Ward.D2 Method 
+#| tbl-cap-location: bottom
+#| eval: false
+
+
+set.seed(123)
+#combine the clusters to the original data set.
+cvd_patients_hclustered <- cvd_patients|>
+  mutate(hcluster_round1 = hclusters)
+
+#`prcomp()` function use only numerical dataset
+cvd_patients_hclustered <-cvd_patients_hclustered|>
+  mutate(HeartDisease = as.numeric(HeartDisease))
+
+# visualization using PCA for dimensionality reduction
+pca_result <- prcomp(cvd_patients_hclustered)
+cvd_patients_pca <- data.frame(pca_result$x[,1:2])
+
+fviz_cluster(list(data = cvd_patients_pca, cluster = hclusters),
+             ellipse.type = "convex", 
+             repel = TRUE, 
+             show.clust.cent = FALSE, ggtheme = theme_minimal())
+```
+
+The graph of colored clusters by the ward.D2 method shows a lot of overlapping. The variance of observations in cluster one is higher than the variance of observation in cluster two.
+
+### Hierarchical Clustering by the Average Linkage Method
+
+```{r}
+#| label: fig-clustering-hierarchical-average-linkage
+#| fig-cap: Hierarchical clustering using average linkage method.
+#| fig-cap-location: bottom
+
+# We use factoextra package for vizualization
+
+library(factoextra)
+
+#  Hierarchical clustering round1.
+
+set.seed(123) # for reproducibility (consistency)
+# Drop the 'HeartDisease' column for clustering
+cvd_patients_clustering <- cvd_patients |>
+  select(-HeartDisease)
+
+# Scale the data. The clustering is performed on the scaled data, which is important because k-means clustering is sensitive to the scale of the features. The scaling ensures that all features contribute equally to the distance calculations used in the clustering.
+cvd_patients_scaled <- scale(cvd_patients_clustering)
+
+
+# Hierarchical Clustering
+hc_comp <- hclust(dist(cvd_patients_scaled), method = "complete")
+
+# Convert hclust to dendrogram
+dend_comp <- as.dendrogram(hc_comp)
+
+# Plot the dendgram
+#plot(dend_comp)
+
+# Color branches by clusters
+#dend_colored <- color_branches(dend, k = 2) # 'k' is the number of clusters
+
+# Plot the Dendrogram
+#plot(hc, hang = -1, labels = cvd_patients$HeartDisease)
+
+# Plot the colored dendrogram
+#plot(dend_colored)
+# Cutting the Dendrogram
+#clusters <- cutree(hc, k = 2) # Adjust 'k' based on desired number of clusters
+
+fviz_dend(dend_comp, k=2, cex = 0.5, color_labels_by_k = TRUE, rect = TRUE)
+
+```
+
+The dendrogram by average linkage looks highly unbalanced clustered. This indicates that choosing the right linkage method for the dataset is crucial for clustering analysis.
+
+To examine the composition of clusters and identify predominant variables or characteristics in each cluster for the hierarchical clustering results, we assign these cluster labels back to the original data, and summarize the data by cluster to understand the mean or median values of each variable within each cluster.
+
+```{r}
+#| label: tbl-average-of-vars-for-hcluster-round1
+#| tbl-cap: The mean of numerical values in each cluster of round.
+#| tbl-cap-location: bottom
+
+#  Mean values of each variable based on the clusters for the round_1 hierarchical clustering.
+
+#combine the clusters to the original data set.
+cvd_patients_hclustered <- cvd_patients|>
+  mutate(hcluster_ward = hclusters)
+
+cvd_patients_hclustered_fctrd <- cvd_patients_hclustered |>
+  mutate(across(c(Sex, ChestPainType, FastingBSugar, ExerciseAngina,  ST_Slope, MajorVessels, Thalassemia, HeartDisease,    hcluster_ward), as.factor))
+
+# Calculate mean values for each cluster
+#Group data by cluster and then summarize each group.
+hcluster_means <- cvd_patients_hclustered_fctrd |>
+  group_by(hcluster_ward) |>
+   #summarise(across(where(is.numeric), ~ mean(., na.rm = TRUE)))
+  summarise(across(where(is.numeric), ~ round(mean(., na.rm = TRUE), 2))) |>
+  mutate(statistic = "mean")
+
+hcluster_sd <- cvd_patients_hclustered_fctrd |>
+  group_by(hcluster_ward) |>
+   #summarise(across(where(is.numeric), ~ mean(., na.rm = TRUE)))
+  summarise(across(where(is.numeric), ~ round(sd(., na.rm = TRUE), 2))) |>
+  mutate(statistic = "sd")
+combined_statis <- rbind(hcluster_means, hcluster_sd)
+
+combined_statis|>
+  gt()
+
+# Display the aggregate data
+#print(hcluster_means)
+
+```
+
+In cluster one, mean values for all metrics except maximum heart rate are higher. This clustering suggests that patients in group one might have heart disease or be at a higher risk, while those in cluster two are less likely to have the disease due to lower cholesterol and resting blood pressure, among other factors. However, despite these patterns, individual variability necessitates further examination for accurate assessment.
+
+\newpage
+
+## Conclusion
+
+Our comprehensive analysis of heart disease data, utilizing a blend of machine learning techniques, has provided valuable insights into the diagnosis and clustering of heart disease patients. The application of the K-Nearest Neighbors (KNN) classification algorithm yielded a commendable accuracy of 84.44%. Further refinement through a 10-fold cross-validation process identified the optimal number of neighbors (k = 13) to enhance the model's performance, achieving an accuracy of 86.44% and a Kappa statistic of 0.7221. These results underscore the effectiveness of KNN in distinguishing between patients with and without heart disease.
+
+In exploring patient clustering, we conducted two rounds of K-means clustering with the primary variation being the "nstart" parameter in the second round. The optimal number of clusters (k = 2) was determined through the elbow and silhouette methods. The consistency between the two rounds of clustering was notable, albeit with some variations in cluster sizes. The visualization of these clusters through Principal Component Analysis (PCA) offered a clear and interpretable two-dimensional representation of the patient groupings.
+
+Our investigation further extended to hierarchical clustering using both Ward and Complete linkage methods. The Complete linkage method resulted in unbalanced clusters, suggesting a sensitivity to certain data characteristics. In contrast, the Ward method yielded more insightful clusters. Specifically, patients in cluster one displayed consistently higher mean values across most measured variables, with the exception of maximum heart rate. This distinction potentially indicates a subgroup of patients with more severe manifestations of heart disease.
+
+Overall, our multi-faceted approach to analyzing heart disease data --- encompassing KNN classification, K-means clustering, and hierarchical clustering --- has not only affirmed the utility of these methods in medical data analysis but also highlighted the nuanced nature of heart disease presentation. The insights gleaned from this study could be instrumental in guiding targeted diagnostic and treatment strategies, ultimately contributing to improved healthcare outcomes for heart disease patients.
