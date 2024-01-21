@@ -1,7 +1,7 @@
 ---
 title: "Clustering of Patients with Heart Disease"
 subtitle: "Capstone Project, M.S. in Data Analysis and Visualization "
-author: "Mukadder Cinar, CUNY, The Graduate Center"
+author: "Mukadder Cinar, CUNY, Graduate Center"
 format: html
 standalone: true
 cite-method: biblatex
@@ -779,7 +779,7 @@ $n$ is the number of pairs of scores.
 
 This formula essentially measures how much two variables change together, compared to how much they vary individually. It's important to note that Pearson's correlation only assesses linear relationships and is sensitive to outliers. If the relationship is not linear or the data contains outliers, Pearson's correlation might not be the appropriate measure of association.
 
-A Pearson Correlation heat-map is a graphical representation of the Pearson correlation coefficients between pairs of variables in a given dataset. In the heat-map, each cell represents the correlation coefficient between two variables. The variables are usually displayed on both the `x` and `y` axes, forming a matrix. The color of each cell indicates the strength and direction of the correlation: typically, a color gradient is used where one extreme (e.g., dark red) represents a high positive correlation `(+1)`, the opposite extreme (e.g., dark blue) represents a high negative correlation `(-1)`, and a neutral color (e.g., white or light grey) indicates no correlation `(0)`.
+A Pearson Correlation heat-map is a graphical representation of the Pearson correlation coefficients between pairs of variables in a given dataset. In the heat-map, each cell represents the correlation coefficient between two variables. The variables are usually displayed on both the `x` and `y` axes, forming a matrix. The color of each cell indicates the strength and direction of the correlation: typically, a color gradient is used where one extreme (e.g., dark red) represents a high positive correlation `(+1)`, the opposite extreme (e.g., dark blue) represents a high negative correlation `(-1)`, and a neutral color (e.g., white or light grey) indicates no correlation `(0)` [@kumar2022]
 
 It is an effective tool for quickly visualizing and identifying relationships between multiple variables, often used in exploratory data analysis to detect potential areas of interest for further analysis or to check assumptions in data modeling and machine learning.
 
@@ -974,7 +974,7 @@ In KNN, the choice of the k-value (the number of nearest neighbors to consider) 
 
 2.  **Validation Approach**: Typically, the best k-value is found through validation techniques like cross-validation, where the model's performance is tested on different subsets of the data for a range of k-values.
 
-    -   **Cross-Validation**: Use k-fold cross-validation to evaluate the performance of the KNN model for different values of k. This involves splitting the training dataset into k smaller sets (or folds), then training the model k times, each time using a different fold as the validation set and the remaining data as the training set \[@leea\].
+    -   **Cross-Validation**: Use k-fold cross-validation to evaluate the performance of the KNN model for different values of k. This involves splitting the training dataset into k smaller sets (or folds), then training the model k times, each time using a different fold as the validation set and the remaining data as the training set [@leea].
 
 ```{r}
 #| label: model-performance-cross-validation
