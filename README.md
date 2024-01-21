@@ -1,3 +1,5 @@
-## README
+## Data Analysis and Visulization Capstone Project 
 
-Heart disease data analysis employing machine learning algorithms.
+
+### Heart Disease Data Analysis Employing Machine Learning Algorithms.
+
