@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Mukadder Cinar, CUNY, The Graduate Center">
+<meta name="author" content="Mukadder Cinar, CUNY, Graduate Center">
 
 <title>Clustering of Patients with Heart Disease</title>
 <style>
@@ -59,7 +59,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Mukadder Cinar, CUNY, The Graduate Center </p>
+             <p>Mukadder Cinar, CUNY, Graduate Center </p>
           </div>
   </div>
     
@@ -83,16 +83,6 @@ ul.task-list li input[type="checkbox"] {
 <li><p><strong>Hierarchical Clustering</strong>: Finally, we use hierarchical clustering. This method also groups patients but in a way that shows us a hierarchy, from very broad groups down to more specific ones.</p></li>
 </ol>
 <p>Through this analysis, we aim to provide insightful categorizations of patients based on their heart disease data, offering a potential pathway for personalized medicine and targeted healthcare interventions. This project not only underscores the power of machine learning in healthcare analytics but also highlights the importance of methodical data exploration in deriving meaningful conclusions from complex medical datasets.</p>
-</section>
-<section id="survey-literature" class="level2">
-<h2 class="anchored" data-anchor-id="survey-literature">Survey Literature</h2>
-<p>Recent advancements in cardiovascular health research have been significantly driven by the integration of data-driven methodologies and predictive modeling. Two notable contributions in this field come from the works presented at the <a href="https://pubs.aip.org/aip/acp/article-abstract/2946/1/060010/2920598/IoT-based-heart-disease-prediction-using-smote-and?redirectedFrom=fulltext">Narayanan</a> and the study by Radi et al.</p>
-<p>At the WFCES II 2022, Narayannan <span class="citation" data-cites="narayanan2023">[@narayanan2023]</span> underscored the importance of an integrative approach to understanding cardiovascular health. The focus was on utilizing data-driven methodologies to unravel the complexities of risk factors and their interplay in cardiovascular diseases. Narayannan’s work lays a critical foundation in identifying and analyzing the various risk factors associated with heart conditions. Our project aims to complement Narayannan’s approach by specifically focusing on patient stratification and targeted treatment approaches. By focusing on these specific aspects, we intend to enhance the practical application of data-driven insights in patient care, particularly in customizing treatment plans and preventive strategies based on individual risk profiles.</p>
-<p>In another significant contribution to the field, detailed in their paper available at <a href="http://medrxiv.org/lookup/doi/10.1101/2023.11.11.23298416">medRxiv</a>, Radi et al. <span class="citation" data-cites="radi2023">[@radi2023]</span> delve into the use of predictive modeling to develop early detection strategies for cardiovascular disorders. Their research highlights the potential of predictive models in identifying early signs of cardiovascular diseases, thereby enabling timely intervention. Building upon Radi et al.’s foundational work, our project aims to explore additional variables that might influence cardiovascular risk.</p>
-<p>In addition to the works of Narayannan and Radi et al., a notable contribution to cardiovascular research is found in a recent study published by <a href="https://www.sciencedirect.com/science/article/abs/pii/S1746809423011291?via%3Dihub">Elsevier</a> <span class="citation" data-cites="singh2024">[@singh2024]</span>. This research explores the applications of machine learning in cardiovascular diagnosis and treatment, with a particular focus on enhancing accuracy and improving patient outcomes . This study underscores the pivotal role of machine learning techniques in revolutionizing cardiovascular healthcare by providing more precise diagnostic tools and efficacious treatment plans.</p>
-<p>Our project draws parallels and extends the insights from these existing studies. Like the Elsevier study, we too harness machine learning techniques, albeit with an emphasis on KNN classification and K-means clustering, to refine cardiovascular disease diagnosis and patient stratification. This aligns with the accuracy and outcome-centric approach of the Elsevier study.</p>
-<p>The integrative approach advocated by Narayannan at WFCES II 2022 resonates with our method of combining various machine learning techniques to understand cardiovascular risk factors better. Meanwhile, our effort to explore additional variables and refine existing models for predictive accuracy complements Radi et al.’s work on early detection strategies.</p>
-<p>While each study contributes uniquely to the field, our project serves as a continuation and expansion of these efforts. We build upon Narayannan’s foundational understanding of risk factors, Radi et al.’s predictive modeling for early detection, and the Elsevier study’s application of machine learning for accuracy and enhanced patient outcomes.</p>
 </section>
 <section id="methodology" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
@@ -901,10 +891,9 @@ Table&nbsp;3: Summary of the Data
 <p>Exploratory Data Analysis (EDA) is a crucial initial step in the data analysis process. It involves the systematic examination and visualization of data to understand its structure, patterns, and potential insights <span class="citation" data-cites="wickham2023">[@wickham2023]</span>. To understand the dataset, we visualize the variables and examine the distributions.</p>
 <section id="distribution-of-categorical-variables" class="level4">
 <h4 class="anchored" data-anchor-id="distribution-of-categorical-variables">Distribution of Categorical Variables</h4>
-<p>As a part of Exploratory Data Analysis (EDA), we use bar plots to illustrate and get insights of the categorical variables.</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-categorical-vars" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-categorical-vars" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-categorical-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-categorical-vars-1.png" class="img-fluid figure-img" width="1440">
@@ -916,11 +905,11 @@ Figure&nbsp;1: The bar plots of Chest Pain, Fasting Blood Pressure, resting ECG,
 </div>
 </div>
 </div>
-<p>The plot reveals that the majority of patients experience asymptomatic chest pain, indicating no chest pain, while the fewest exhibit symptoms of typical chest pain.<br>
+<p>The plot revealed that the majority of patients experience asymptomatic chest pain, indicating no chest pain, while the fewest exhibit symptoms of typical chest pain.<br>
 </p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-categorical2-vars" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-categorical2-vars" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-categorical2-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-categorical2-vars-1.png" class="img-fluid figure-img" width="1440">
@@ -932,14 +921,14 @@ Figure&nbsp;2: Bar plots of ST_Slope, Sex, Thalassemia, and Heart Disease.
 </div>
 </div>
 </div>
-<p>The plot highlights that the largest proportion of heart disease patients are male. Additionally, it indicates that the counts of up-slope and flat-slope are quite similar, while the count of down-slope is relatively low.</p>
+<p>The plot highlighted that the largest proportion of heart disease patients are male. Additionally, it indicated that the counts of up-slope and flat-slope are quite similar, while the count of down-slope is relatively low.</p>
 </section>
 <section id="distribution-of-numerical-variables" class="level4">
 <h4 class="anchored" data-anchor-id="distribution-of-numerical-variables">Distribution of Numerical Variables</h4>
 <p>The distribution of numerical variables refers to how the values of these variables are spread or scattered across a range. In data analysis, understanding the distribution of numerical variables is crucial for various tasks, such as statistical testing, data modeling, and feature selection.</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-numerical-var-distribution" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-numerical-var-distribution" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-numerical-var-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-numerical-var-distribution-1.png" class="img-fluid figure-img" width="1440">
@@ -951,7 +940,7 @@ Figure&nbsp;3: Numerical Variables Distribution
 </div>
 </div>
 </div>
-<p>The plot demonstrates a noticeable increase in the number of patients after the age of 40. Cholesterol levels exhibit some outliers on the higher side. Furthermore, the distribution of resting blood pressure is skewed to the right, whereas the distribution of Maximum heart rate is skewed to the left.</p>
+<p>The plot demonstrated a noticeable increase in the number of patients after the age of 40. Cholesterol levels exhibit some outliers on the higher side. Furthermore, the distribution of resting blood pressure is skewed to the right, whereas the distribution of Maximum heart rate is skewed to the left.</p>
 </section>
 <section id="bivariate-analysis" class="level4">
 <h4 class="anchored" data-anchor-id="bivariate-analysis">Bivariate Analysis</h4>
@@ -974,7 +963,7 @@ Figure&nbsp;3: Numerical Variables Distribution
 <p>It’s important to examine the distribution of categorical variables in relation to the response variable to gain a better understanding of the data and to provide insights for further analysis.</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-cpTarget-slopeTarget" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-cpTarget-slopeTarget" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cpTarget-slopeTarget-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-cpTarget-slopeTarget-1.png" class="img-fluid figure-img" width="1440">
@@ -986,11 +975,11 @@ Figure&nbsp;4: Distribution of chest pain types and ST slope based on the target
 </div>
 </div>
 </div>
-<p>The plot highlights a notably higher rate of heart disease in patients experiencing asymptomatic chest pain. Regarding the ST Slope in relation to the presence of Heart Disease, it’s evident that when the ST slope is flat, the likelihood of the disease is substantially higher (no disease: disease = 16%: 30%), whereas approximately 10% of patients with the up-slope exhibit the disease.</p>
+<p>The plot highlighted a notably higher rate of heart disease in patients experiencing asymptomatic chest pain. Regarding the ST Slope in relation to the presence of Heart Disease, it’s evident that when the ST slope is flat, the likelihood of the disease is substantially higher (no disease: disease = 16%: 30%), whereas approximately 10% of patients with the up-slope exhibit the disease.</p>
 <div style="page-break-after: always;"></div>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-rECGTarget-thalTarget" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-rECGTarget-thalTarget" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rECGTarget-thalTarget-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-rECGTarget-thalTarget-1.png" class="img-fluid figure-img" width="1440">
@@ -1002,7 +991,7 @@ Figure&nbsp;5: Distribution of Resting ECG and Thalassemia vs.&nbsp;the target v
 </div>
 </div>
 </div>
-<p>The plot suggests that if the resting ECG shows signs of LVH (Left Ventricular Hypertrophy, which involves the enlargement and thickening of the heart’s main pumping chamber), the likelihood of the disease is slightly elevated. Conversely, when the heart rhythm is normal, the probability of the disease is lower (approximately 31% without the disease and 18% with the disease).</p>
+<p>The plot suggested that if the resting ECG shows signs of LVH (Left Ventricular Hypertrophy, which involves the enlargement and thickening of the heart’s main pumping chamber), the likelihood of the disease is slightly elevated. Conversely, when the heart rhythm is normal, the probability of the disease is lower (approximately 31% without the disease and 18% with the disease).</p>
 <p>Thalassemia is a hereditary blood disorder passed from parents to children, characterized by insufficient production of hemoglobin (red blood cells) <span class="citation" data-cites="cdc2020">[@cdc2020]</span>. When we examine the plot of Thalassemia against Heart disease, it becomes evident that individuals with normal thalassemia levels have a reduced likelihood of the disease. Conversely, for patients with the thalassemia type of reversible defect, a higher proportion have the disease (approximately 10% without the disease and 30% with the disease).</p>
 </section>
 </section>
@@ -1010,7 +999,7 @@ Figure&nbsp;5: Distribution of Resting ECG and Thalassemia vs.&nbsp;the target v
 <h4 class="anchored" data-anchor-id="section-2"></h4>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-sex-fbs-exang-target" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-sex-fbs-exang-target" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sex-fbs-exang-target-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-sex-fbs-exang-target-1.png" class="img-fluid figure-img" width="1440">
@@ -1022,11 +1011,10 @@ Figure&nbsp;6: Distribution of sex and exercise-induced angina based on heart di
 </div>
 </div>
 </div>
-<p>The plot depicting Sex versus Heart Disease reveals that the likelihood of the disease is greater in males (approximately 30% without the disease and 37% with the disease), whereas in females, it is considerably lower (approximately 24% without the disease and 8% with the disease).</p>
-<p>Regarding fasting blood sugar, a level below 120 mg/dl is considered normal. The graph illustrates that when fasting blood sugar levels are elevated, the proportion of individuals with and without the disease is roughly equal.</p>
+<p>The plot depicting Sex versus Heart Disease revealed that the likelihood of the disease is greater in males (approximately 30% without the disease and 37% with the disease), whereas in females, it is considerably lower (approximately 24% without the disease and 8% with the disease).</p>
+<p>Regarding fasting blood sugar, a level below 120 mg/dl is considered normal. The graph illustrated that when fasting blood sugar levels are elevated, the proportion of individuals with and without the disease is roughly equal.</p>
 <section id="numerical-variables-pairwise-distribution" class="level5">
 <h5 class="anchored" data-anchor-id="numerical-variables-pairwise-distribution">Numerical Variables Pairwise Distribution</h5>
-<p>To understand the variation between numerical variables, we look at the Pearson Correlation coefficients.</p>
 <p><strong>The Pearson correlation coefficient</strong> is a measure of the linear correlation between two variables X and Y. It has a value between <code>+1</code> and <code>-1</code>, where <code>1</code> is total positive linear correlation, <code>0</code> is no linear correlation, and <code>-1</code> is total negative linear correlation. The formula to calculate the Pearson correlation coefficient, denoted as <span class="math inline">\(r\)</span>, is:</p>
 <p><span class="math display">\[ r = \frac{n(\sum xy) - (\sum x)(\sum y)}{\sqrt{[n\sum x^2 - (\sum x)^2][n\sum y^2 - (\sum y)^2]}}​ \]</span></p>
 <p>Where:</p>
@@ -1037,11 +1025,11 @@ Figure&nbsp;6: Distribution of sex and exercise-induced angina based on heart di
 <li><span class="math inline">\(\sum{x^2}\)</span> and <span class="math inline">\(\sum{y^2}\)</span> are the sums of the squared x scores and squared y scores respectively.</li>
 </ul>
 <p>This formula essentially measures how much two variables change together, compared to how much they vary individually. It’s important to note that Pearson’s correlation only assesses linear relationships and is sensitive to outliers. If the relationship is not linear or the data contains outliers, Pearson’s correlation might not be the appropriate measure of association.</p>
-<p>A Pearson Correlation heat-map is a graphical representation of the Pearson correlation coefficients between pairs of variables in a given dataset. In the heat-map, each cell represents the correlation coefficient between two variables. The variables are usually displayed on both the <code>x</code> and <code>y</code> axes, forming a matrix. The color of each cell indicates the strength and direction of the correlation: typically, a color gradient is used where one extreme (e.g., dark red) represents a high positive correlation <code>(+1)</code>, the opposite extreme (e.g., dark blue) represents a high negative correlation <code>(-1)</code>, and a neutral color (e.g., white or light grey) indicates no correlation <code>(0)</code> <span class="citation" data-cites="kumar2022">[@kumar2022]</span></p>
+<p>A Pearson Correlation heat-map is a graphical representation of the Pearson correlation coefficients between pairs of variables in a given dataset. In the heat-map, each cell represents the correlation coefficient between two variables. The variables are usually displayed on both the <code>x</code> and <code>y</code> axes, forming a matrix. The color of each cell indicates the strength and direction of the correlation: typically, a color gradient is used where one extreme (e.g., dark red) represents a high positive correlation <code>(+1)</code>, the opposite extreme (e.g., dark blue) represents a high negative correlation <code>(-1)</code>, and a neutral color (e.g., white or light grey) indicates no correlation <code>(0)</code> <span class="citation" data-cites="wickham2023">[@wickham2023]</span>.</p>
 <p>It is an effective tool for quickly visualizing and identifying relationships between multiple variables, often used in exploratory data analysis to detect potential areas of interest for further analysis or to check assumptions in data modeling and machine learning.</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-corr-heatmap" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-corr-heatmap" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-corr-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-corr-heatmap-1.png" class="img-fluid figure-img" width="1440">
@@ -1078,9 +1066,8 @@ Figure&nbsp;7: Pearson correlation coefficients between the numerical variables.
 <ul>
 <li>It is widely used in real-life scenarios such as finance (for credit scoring), healthcare (for medical diagnosis), education, recommendation systems, and more. The algorithm gets significantly slower as the number of examples and/or predictors/independent variables increase <span class="citation" data-cites="classifi">[@classifi]</span>.</li>
 </ul>
-<p>To perform the K-NN classification algrithm, I factor the the responsevariable <code>HeartDisease</code> because its class was numerical as other variables.</p>
-<p>I recheck for the missing values. There’s no missing values because that was handled in the pre-processing section.</p>
-<p>Then, I scale the data using the <code>scale()</code> function from the <code>caret</code> package .</p>
+<p>Prior to the application of the K-NN classification algorithm, the dataset underwent a thorough inspection for missing values.</p>
+<p>Subsequently, the data was normalized using the “scale()” function, a standard preprocessing step facilitated by the ‘caret’ package in R. This scaling process is crucial to ensure that the variables contribute equally to the analysis, avoiding any bias due to the scale of measurements</p>
 <div class="cell" data-tbl-cap-location="bottom">
 <div id="tbl-scaled" class="cell anchored" data-tbl-cap-location="bottom">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1656,8 +1643,8 @@ Table&nbsp;4: View of the scaled data by normalizing each variable.
 </div>
 </div>
 <div style="page-break-after: always;"></div>
-<section id="create-the-k-nn-model-k5" class="level4">
-<h4 class="anchored" data-anchor-id="create-the-k-nn-model-k5">Create the k-NN model: k=5</h4>
+<section id="the-k-nn-model-k5" class="level4">
+<h4 class="anchored" data-anchor-id="the-k-nn-model-k5">The k-NN model: k=5</h4>
 <div id="tbl-classification-confusion" class="cell anchored" data-tbl-cap-location="bottom">
 <figure class="quarto-float quarto-float-tbl figure">
 <div aria-describedby="tbl-classification-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1679,10 +1666,10 @@ Table&nbsp;5: Confusin matrix obtained from KNN model
 <pre><code>[1] "The accuracy of the model is: 84.44"</code></pre>
 </div>
 </div>
-<p>Visualize the results</p>
+<p>Visualizing the Results</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-knn-modelpred-vs-actual" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-knn-modelpred-vs-actual" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-knn-modelpred-vs-actual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-knn-modelpred-vs-actual-1.png" class="img-fluid figure-img" width="1440">
@@ -1749,14 +1736,13 @@ The final value used for the model was k = 13.</code></pre>
 <section id="interpretation-of-the-result" class="level3">
 <h3 class="anchored" data-anchor-id="interpretation-of-the-result"><strong>Interpretation of the Result:</strong></h3>
 <p><strong>Optimal k-Value</strong>: The model tuning process identified that <strong><code>k = 13</code></strong> as the optimal number of neighbors for the KNN algorithm. This means that when making a prediction for a new data point, the algorithm considers the <code>13</code> nearest data points in the training set and bases its prediction on these.</p>
-<p><strong>Accuracy</strong>: The choice of <strong><code>k = 13</code></strong> was based on achieving the highest accuracy. Accuracy is a measure of how often the model correctly predicts the target variable. A high accuracy with this k-value suggests that the model is generally effective in classifying the data correctly.</p>
+<p><strong>Accuracy</strong>: The choice of <strong><code>k = 13</code></strong> was based on achieving the highest accuracy. Accuracy is a measure of how often the model correctly predicts the target variable. A high accuracy with this k-value suggested that the model is generally effective in classifying the data correctly.</p>
 <p><strong>Kappa Statistic</strong>: A Kappa of <code>0.722</code> is relatively high, suggesting good agreement between the model predictions and the actual values. In the context of Kappa, where <code>1</code> is perfect agreement and <code>0</code> is no better than chance, a value of <code>0.722</code> indicates that the model’s predictions are substantially in agreement with the actual values, and much of this agreement is not due to chance.</p>
 </section>
 <section id="k-means-clustering" class="level3">
 <h3 class="anchored" data-anchor-id="k-means-clustering">K-Means Clustering</h3>
 <p><br>
-K-means clustering is a popular unsupervised machine learning algorithm used for partitioning a dataset into a set of distinct, non-overlapping subgroups or clusters. We employ the K-means clustering algorithm in the heart disease dataset to uncover hidden groupings or clusters among the data points. By identifying these clusters, we can gain insights into potential subpopulations of patients who share similar characteristics. This unsupervised machine learning method allows us to better understand the dataset’s inherent structure and may help in tailoring treatments or interventions for specific patient groups.</p>
-<p>The algorithm aims to partition the data such that the variance within each cluster is minimized <span class="citation" data-cites="k-means">[@k-means]</span>.</p>
+K-means clustering is a popular unsupervised machine learning algorithm used for partitioning a dataset into a set of distinct, non-overlapping subgroups or clusters. The K-means clustering algorithm in the heart disease dataset was employed to uncover hidden groupings or clusters among the data points.The algorithm aims to partition the data such that the variance within each cluster is minimized <span class="citation" data-cites="k-means">[@k-means]</span>.</p>
 <p><strong>Algorithm Steps</strong>:</p>
 <ul>
 <li><strong>Initialization</strong>: Start by randomly selecting k centroids, where k is the desired number of clusters.</li>
@@ -1784,7 +1770,7 @@ K-means clustering is a popular unsupervised machine learning algorithm used for
 <p>Plot these Within-cluster Sum of Square values against the number of clusters k.The point where the plot starts to bend and forms an “elbow” is considered as an indicator of the appropriate number of clusters <span class="citation" data-cites="datascic">[@datascic]</span>.</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-scree-plot" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-scree-plot" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-scree-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-scree-plot-1.png" class="img-fluid figure-img" width="1440">
@@ -1796,10 +1782,11 @@ Figure&nbsp;9: Scree plot to find the optimal k-value.
 </div>
 </div>
 </div>
-<p>The scree plot indicates that the optimal k-value is two. However, it seems like three would be the right as well. To confirm the right k-value, we use alternative method the <strong>Average Silhouette</strong> method. It is used to determine the optimal number of clusters (k) in unsupervised clustering, such as K-means. It measures how similar data points are to their own cluster compared to other clusters. Higher scores indicate better-defined clusters, and the k with the highest average score is chosen as the optimal number of clusters <span class="citation" data-cites="kassambara">[@kassambara]</span>.</p>
+<p>The scree plot indicated that two clusters would be optimal for the dataset in question. However, there was also substantial evidence to justify the exploration of three clusters, presenting an alternative perspective on the potential segmentation of the data.</p>
+<p>To firmly establish the correct k-value, an alternative method called the Average Silhouette method was employed. This technique aids in identifying the optimal number of clusters (k) in unsupervised clustering, like K-Means. It assesses the degree of similarity between data points within their assigned clusters versus other clusters. A higher Average Silhouette score signifies more distinct and well-defined clusters, and the k-value corresponding to the highest average score is selected as the optimal number of clusters <span class="citation" data-cites="kassambara">[@kassambara]</span>.</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-Silhouette-method-plot" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-Silhouette-method-plot" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-Silhouette-method-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-Silhouette-method-plot-1.png" class="img-fluid figure-img" width="1440">
@@ -1811,13 +1798,10 @@ Figure&nbsp;10: Silhouette method plot to determine the optimal k-value.
 </div>
 </div>
 </div>
-<p>We choose the optimal k-value <span class="math inline">\(2\)</span> after performing the Elbow and the average Silhouette methods.</p>
+<p>After conducting both the Elbow method and the Average Silhouette method, the optimal k-value was determined as 2.</p>
 <p>K-means is a method used to group data, like patient information, into clusters. This method starts by randomly choosing points in the data to form the initial clusters, which means every time we run k-means, we might get different clusters <span class="citation" data-cites="k-meansc">[@k-meansc]</span>.</p>
-<p>For our heart disease data, it’s important that the clusters are not just random groupings. We want to see if similar patients are grouped together consistently, even when we start the k-means algorithm from different points. If the same patients end up in different clusters each time, it might mean that the clusters don’t really tell us anything meaningful about the patients. For this reason we run the algorithm twice.</p>
-</section>
-<section id="section-3" class="level3">
-<h3 class="anchored" data-anchor-id="section-3"></h3>
-<p>We perform k-means clustering twice on the heart disease data by changing the <code>nstart</code> value in the second round which refers to the number of random initialization of centers. The k-means algorithm is sensitive to the initial placement of the centroids <span class="citation" data-cites="k-means">[@k-means]</span>. To mitigate this, <code>nstart</code> specifies how many times the algorithm should be run with different random initialization. The best output in terms of within-cluster sum of squares is kept. This helps in finding a more robust clustering solution. By comparing the results of this second round with our first round, we can check if the groups of patients are similar. This helps us understand if our clustering really makes sense.</p>
+<p>For the heart disease dataset, the significance of the clusters was evaluated to ensure they were not mere random groupings. Consistency in patient grouping was examined by running the k-means algorithm from different starting points. If identical patients consistently clustered differently, this could indicate that the clusters were not meaningfully related to patient characteristics. Consequently, the algorithm was executed twice to test the robustness of the clustering outcome.</p>
+<p>K-means clustering was performed twice on the heart disease data by changing the <code>nstart</code> value in the second round which refers to the number of random initialization of centers. The K-means algorithm is sensitive to the initial placement of the centroids <span class="citation" data-cites="k-means">[@k-means]</span>. To mitigate this, <code>nstart</code> specifies how many times the algorithm should be run with different random initialization. The best output in terms of within-cluster sum of squares is kept.</p>
 <section id="sec-interpreting-the-k-means-clustering-results" class="level4">
 <h4 class="anchored" data-anchor-id="sec-interpreting-the-k-means-clustering-results"><strong>The K-Means Clustering Results</strong></h4>
 <ol type="1">
@@ -1888,17 +1872,13 @@ Table&nbsp;6: The contingency table to compare the cluster assignments.
 </tr>
 </tbody>
 </table>
-<p><strong>Interpreting the Contingency Table:</strong></p>
-<ul>
-<li>If many patients from a cluster in Round 1 are in the same cluster in Round 2, this suggests consistency.</li>
-<li>If patients from a cluster in Round 1 are spread across different clusters in Round 2, this suggests inconsistency.</li>
-</ul>
-<p><strong>Diagonal Cells in the Contingency Table:</strong></p>
-<p>Each diagonal cell in the contingency table represents the number of data points (patients in your case) that were in the same cluster in both rounds of clustering. For example, the cell at the intersection of Cluster 1 in Round 1 and Cluster 1 in Round 2 shows how many patients remained in Cluster 1 across both rounds.</p>
-<p>If the diagonal cells have high counts compared to the off-diagonal cells, this suggests a high level of consistency. It means that a significant number of patients were grouped into the same cluster in both rounds of clustering.</p>
-<p>Conversely, if the off-diagonal cells have higher counts than the diagonal cells, it indicates that many patients shifted to different clusters in the second round, suggesting variability or instability in the clustering.</p>
-<p>Conclusion for K-Means Clustering</p>
-<p>In the presented contingency table, the diagonal values (51, 125) represent lower counts compared to the off-diagonal ones. Although 125 instances were retained in cluster 2 during the second round, the high count of diagonal (displaced) values suggests that K-Means clustering may not be effective or robust for this dataset, given its lack of consistent results.</p>
+<p>Interpreting the Contingency Table:</p>
+<p>• If many patients from a cluster in Round 1 are in the same cluster in Round 2, this suggests consistency.</p>
+<p>•If patients from a cluster in Round 1 are spread across different clusters in Round 2, this suggests inconsistency.</p>
+<p>In the contingency table obtained from two rounds of clustering, the diagonal cells represented the count of data points that remained in the same cluster for both rounds. For instance, the count at the intersection of Cluster 1 in Round 1 and Cluster 1 in Round 2 indicated the number of patients who stayed in Cluster 1 throughout.</p>
+<p>High counts in the diagonal cells, relative to the off-diagonal cells, were indicative of high level of consistency, signifying that considerable number of patients consistently grouped into the same cluster in both clustering rounds.</p>
+<p>In contrast, higher counts in the off-diagonal cells compared to the diagonal cells suggested that numerous patients moved to different clusters in the subsequent round, implying variability or instability in the clustering outcomes.</p>
+<p>In the contingency table presented, the diagonal values (51, 125) indicated lower counts compared to the off-diagonal ones. While 125 instances remained in Cluster 2 during the second round, the high count of off-diagonal (displaced) values (60, 67) implied that K-means clustering might not have been effective or robust for this dataset, as evidenced by the lack of consistent clustering results.</p>
 </section>
 <section id="clustering-statistics" class="level4">
 <h4 class="anchored" data-anchor-id="clustering-statistics">Clustering Statistics</h4>
@@ -2957,7 +2937,7 @@ Table&nbsp;9: Frequency distribution of categorical variables based on K-means r
 </div>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-cluster-heartD-sex-round2" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-cluster-heartD-sex-round2" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cluster-heartD-sex-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-cluster-heartD-sex-round2-1.png" class="img-fluid figure-img" width="1440">
@@ -2971,7 +2951,7 @@ Figure&nbsp;11: Heart Disease and sex distribution in round-2 clusters.
 </div>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-cluster-chestP-slope-round2" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-cluster-chestP-slope-round2" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cluster-chestP-slope-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-cluster-chestP-slope-round2-1.png" class="img-fluid figure-img" width="1440">
@@ -2985,7 +2965,7 @@ Figure&nbsp;12: Distribution of chest pain and slope based on the round-2 cluste
 </div>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-cluster-exerAngina-fastingBS-round2" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-cluster-exerAngina-fastingBS-round2" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cluster-exerAngina-fastingBS-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-cluster-exerAngina-fastingBS-round2-1.png" class="img-fluid figure-img" width="1440">
@@ -2999,7 +2979,7 @@ Figure&nbsp;13: Distribution of exercise-induced angina and fasting blood sugar 
 </div>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-cluster-majorVessels-thalassemia-round2" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-cluster-majorVessels-thalassemia-round2" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cluster-majorVessels-thalassemia-round2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-cluster-majorVessels-thalassemia-round2-1.png" class="img-fluid figure-img" width="1440">
@@ -3014,10 +2994,11 @@ Figure&nbsp;14: Distribution of major vessels and thalassemia on the round-2 clu
 </section>
 <section id="visualization-of-k-means-clusters" class="level3">
 <h3 class="anchored" data-anchor-id="visualization-of-k-means-clusters"><strong>Visualization of K-Means Clusters</strong></h3>
-<p>I visualize the clusters obtained by K-means algorithm using Principal Component Analysis (PCA) in order to uncover patterns and groupings that might not be apparent in the high-dimensional space. PCA is a method used to reduce the number of variables in a dataset while retaining most of the original information. It does this by transforming the original variables into a new set of variables, the principal components, which are orthogonal (uncorrelated) and account for decreasing proportions of the total variance in the data <span class="citation" data-cites="principaa">[@principaa]</span>.</p>
+<p>The clusters derived from the K-means algorithm were visualized using Principal Component Analysis (PCA) in order to uncover patterns and groupings that might not be apparent in the high-dimensional space.</p>
+<p>PCA is a method used to reduce the number of variables in a dataset while retaining most of the original information. It does this by transforming the original variables into a new set of variables, the principal components, which are orthogonal (uncorrelated) and account for decreasing proportions of the total variance in the data <span class="citation" data-cites="principaa">[@principaa]</span>.</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-clustering1-visl" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-clustering1-visl" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-clustering1-visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-clustering1-visl-1.png" class="img-fluid figure-img" width="1440">
@@ -3031,7 +3012,7 @@ Figure&nbsp;15: K-means clustering round-1. PCA is used to visualize the cluster
 </div>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-clustering2-visl" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-clustering2-visl" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-clustering2-visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-clustering2-visl-1.png" class="img-fluid figure-img" width="1440">
@@ -3049,11 +3030,11 @@ Figure&nbsp;16: K-means clustering round-2.by PCA of the dataset.
 <p>Principal Component Analysis (PCA) is a powerful technique used in data analysis for dimensionality reduction. It transforms high-dimensional data into a lower-dimensional form, making it easier to visualize and interpret, especially when dealing with complex datasets like those in healthcare <span class="citation" data-cites="principa">[@principa]</span>.</p>
 <p>In the context of k-means clustering, particularly with datasets involving multiple variables related to heart disease, PCA serves as an invaluable tool for several reasons:</p>
 <p><strong>Simplifying Data Visualization</strong>: PCA reduces the dimensions of the data to the two most informative components (PC1 and PC2). This simplification allows us to create a two-dimensional scatter plot, where each point represents a patient, and the clustering results can be visually assessed <span class="citation" data-cites="principa">[@principa]</span>.</p>
-<p><strong>Understanding Data Structure</strong>: By visualizing the data in the reduced PCA space, we can observe how the patients are grouped by the k-means algorithm. Clusters that are distinct and well-separated in the PCA plot suggest that k-means has successfully identified meaningful patterns in the data.</p>
+<p><strong>Understanding Data Structure</strong>: The visualization in the reduced PCA space allowed for the observation of patient groupings as determined by the k-means algorithm. Clusters that appeared distinct and well-separated in the PCA plot indicated the successful identification of meaningful patterns in the data.</p>
 <p><strong>Interpreting Clusters</strong>: The PCA plot can help in interpreting the characteristics of the clusters. For instance, if patients with certain risk factors (like high cholesterol or age) are predominantly found in one cluster, it could indicate a group with a higher risk of heart disease.</p>
 <p><strong>Facilitating Decision Making</strong>: The clarity provided by PCA visualization aids in making informed decisions, such as adjusting the number of clusters in k-means or identifying key variables for further analysis.</p>
 <p>In summary, PCA visualization in the context of k-means clustering provides a clear, simplified view of how patients are grouped based on their health data. This approach not only aids in validating the clustering results but also offers insights into the underlying structure of the data, which is crucial for accurate interpretation and subsequent healthcare decisions.</p>
-<p>To better understand the principal components we look at PCA Loadings. PCA loadings show how much each original variable contributes to each principal component <span class="citation" data-cites="principa">[@principa]</span>. This helps in understanding what characteristics (variables) are most influential in differentiating the clusters.</p>
+<p>To comprehend the principal components more thoroughly, PCA Loadings were analyzed. PCA loadings indicate the contribution of each original variable to the principal components, shedding light on the variables that most significantly differentiate the clusters<span class="citation" data-cites="principa">[@principa]</span>.</p>
 <div id="tbl-exracting-PCA-loadings" class="cell anchored" data-tbl-cap-location="bottom">
 <figure class="quarto-float quarto-float-tbl figure">
 <div aria-describedby="tbl-exracting-PCA-loadings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -3084,7 +3065,7 @@ Table&nbsp;10: Contribution rates of each variable to PC1 and PC2.
 <p>A bar plot to display the contribution of each original variable to <strong><code>PC1</code></strong> and <strong><code>PC2</code></strong>:</p>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-pca-loadings-Visl" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-pca-loadings-Visl" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pca-loadings-Visl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-pca-loadings-Visl-1.png" class="img-fluid figure-img" width="1440">
@@ -3096,18 +3077,10 @@ Figure&nbsp;17: The bar plot displays the contribution of each original variable
 </div>
 </div>
 </div>
-<p>PCA has reduced the multidimensional data into two components that capture the most variance. These components are linear combinations of the original variables, with loadings indicating the contribution of each variable.</p>
-<p>From the PCA loadings we see that PC1 seems to be heavily influenced by cholesterol, suggesting that this component might be capturing aspects of patient health related to metabolic factors. While PC2, influenced significantly by both MaxHR and age (but in opposite directions), might be capturing a combination of cardiovascular efficiency (reflected by heart rate) and age-related factors.</p>
-<p>The PCA loadings and subsequent cluster visualization offer insights into the underlying characteristics of patient groups. PC1 primarily reflects cholesterol-related variations, while PC2 captures a blend of heart rate and age factors. This dimensional reduction, coupled with k-means clustering, provides a nuanced understanding of patient health profiles, potentially aiding in targeted healthcare strategies. However, these findings should be considered exploratory and validated further with clinical expertise to ensure their relevance and accuracy in medical research or practice.</p>
-</section>
-<section id="conclusion" class="level4">
-<h4 class="anchored" data-anchor-id="conclusion">Conclusion:</h4>
-<p>In our analysis of the <strong><code>heart Disease</code></strong> dataset using k-means clustering with two clusters, we observed moderate consistency in patient groupings across two rounds of clustering. While a significant portion of patients were grouped into the same cluster in both rounds, indicating potentially meaningful groupings, there was also notable movement between clusters. This suggests that while there may be some stable patterns in the data, there is also a degree of variability in how patients are grouped. These findings highlight the importance of considering multiple rounds of clustering and possibly exploring additional clustering methods or incorporating more domain-specific knowledge for a comprehensive understanding of patient categorizations.</p>
-</section>
-</section>
-</section>
-<section id="hierarchical-clustering" class="level2">
-<h2 class="anchored" data-anchor-id="hierarchical-clustering"><strong>Hierarchical Clustering</strong></h2>
+<p>The PCA loadings revealed that PC1 was predominantly influenced by cholesterol levels, suggesting that this component may be reflective of patient health in relation to metabolic factors. In contrast, PC2 influenced significantly by maximum heart rate (MaxHR) and age, albeit in opposite directions, potentially representing a combination of cardiovascular efficiency (reflected by heart rate) and age-related factors.</p>
+<p>Through the PCA loadings and subsequent cluster visualization, insights into the underlying characteristics of patient groups were obtained. PC1 was primarily indicative of cholesterol-related variations, while PC2 captures a blend of heart rate and age factors. This dimensional reduction, coupled with k-means clustering, provided a detailed understanding of patient health profiles, which could assist in devising targeted healthcare strategies. However, these findings should be considered exploratory and validated further with clinical expertise to ensure their relevance and accuracy in medical research or practice.</p>
+<p>In summary, the analysis of the heart disease dataset using k-means clustering with two clusters, demonstrated moderate consistency in patient groupings across two rounds of clustering. While a significant portion of patients were grouped into the same cluster in both rounds, indicating potentially meaningful groupings, there was also notable movement between clusters. This suggests that while there may be some stable patterns in the data, there is also a degree of variability in how patients are grouped. These findings highlight the importance of considering multiple rounds of clustering and possibly exploring additional clustering methods or incorporating more domain-specific knowledge for a comprehensive understanding of patient categorizations.</p>
+<p><strong>Hierarchical Clustering</strong></p>
 <p>Hierarchical clustering is a method of cluster analysis that seeks to build a hierarchy of clusters. It is a widely used and effective approach in data analysis for grouping data points into a tree-like structure based on their similarity <span class="citation" data-cites="hierarch">[@hierarch]</span>. Hierarchical clustering involves creating a hierarchy of clusters, which is typically visualized in a dendrogram.</p>
 <p>There are two main types:</p>
 <ul>
@@ -3134,11 +3107,11 @@ Figure&nbsp;17: The bar plot displays the contribution of each original variable
 <li><p>Ward’s Method (ward.D2): Ward’s method, particularly the ward.D2 variant, is an agglomerative clustering approach. It minimizes the total within-cluster variance. At each step, the pair of clusters with the minimum between-cluster distance are merged. Application: This method is particularly useful when the clusters are of approximately similar sizes and when you want to minimize the variance within clusters. Characteristics: Tends to create more compact, equally sized clusters, which can be advantageous for certain types of data but may force some natural groupings to merge <span class="citation" data-cites="msc2023">[@msc2023]</span> .</p></li>
 <li><p>Complete Linkage: Complete linkage clustering, also known as the maximum or farthest neighbor method, defines the distance between two clusters as the maximum distance between any single data point in the first cluster and any single data point in the second cluster. Application: It’s well-suited for separating clusters that are relatively compact and far from each other. Characteristics: This method can often reveal the actual structure of the data but might also be sensitive to outliers, resulting in clusters that are influenced by the most dissimilar members <span class="citation" data-cites="hierarcha">[@hierarcha]</span> .</p></li>
 <li><p>Average Linkage: In average linkage clustering, the distance between two clusters is defined as the average distance between each data point in the first cluster and every data point in the second cluster. Application: It is useful for creating clusters where each member is similar on average to the members of its cluster. Characteristics: This method provides a balance between the sensitivity of the complete method to outliers and the tendency of the Ward’s method to create clusters of similar sizes. However, it can sometimes create chaining effects where clusters end up being elongated and straggly <span class="citation" data-cites="msc2023">[@msc2023]</span>.</p>
-<p>In this analysis, we will perform the hierarchical clustering using the two most common linkage methods (the ward and the complete linkage), and we will compare them.</p></li>
+<p>In this analysis, the hierarchical clustering was performed using the two most common linkage methods (the ward and the complete linkage), subsequently compared to each other.</p></li>
 </ol>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-clustering-hierarchical-ward-method" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-clustering-hierarchical-ward-method" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-clustering-hierarchical-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-clustering-hierarchical-ward-method-1.png" class="img-fluid figure-img" width="1440">
@@ -3150,8 +3123,8 @@ Figure&nbsp;18: Hierarchical clustering using “ward.D2” method.
 </div>
 </div>
 </div>
-<p>According to the dendogram, the best height to cut the dendogram is 25-30 referring to two clusters. This result confirms the same result for the best number of clusters that we obtained by the Scree plot when we perform the K-means clustering.</p>
-<p>Now, let’s see the table that shows the number of observation in each cluster.</p>
+<p>Based on the dendrogram, the optimal cut height for dividing the dendrogram into two clusters falls within the range of 25-30. This outcome aligned with the result obtained using the Silhouette method for K-means clustering, reaffirming the choice of two clusters as the most suitable number.</p>
+<p>After partitioning the dendrogram with K= 2, the table that provides the count of observations within each cluster was generated.</p>
 <div id="tbl-hierarchical-clustering-ward-method" class="cell anchored" data-tbl-cap-location="bottom">
 <figure class="quarto-float quarto-float-tbl figure">
 <div aria-describedby="tbl-hierarchical-clustering-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -3193,7 +3166,7 @@ Table&nbsp;11: Hierarchical Clustering Table Ward.D2 Method
 <p>The dendogram with two colored clusters</p>
 <div class="cell tbl-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-colored-dendogram-ward-method" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-colored-dendogram-ward-method" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-colored-dendogram-ward-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-colored-dendogram-ward-method-1.png" class="img-fluid figure-img" width="1440">
@@ -3209,12 +3182,13 @@ Figure&nbsp;19: Colored Dendogram for the Two Hierarchical Clusters by ward.D2 M
 <div class="cell tbl-cap-location-bottom">
 
 </div>
-<p>The graph of colored clusters by the ward.D2 method shows a lot of overlapping. The variance of observations in cluster one is higher than the variance of observation in cluster two.</p>
+</section>
+</section>
 <section id="hierarchical-clustering-by-the-average-linkage-method" class="level3">
 <h3 class="anchored" data-anchor-id="hierarchical-clustering-by-the-average-linkage-method">Hierarchical Clustering by the Average Linkage Method</h3>
 <div class="cell fig-cap-location-bottom">
 <div class="cell-output-display">
-<div id="fig-clustering-hierarchical-average-linkage" class="quarto-figure quarto-figure-center anchored" data-cap-location="bottom" width="1440">
+<div id="fig-clustering-hierarchical-average-linkage" class="quarto-figure quarto-figure-center anchored" width="1440" data-cap-location="bottom">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-clustering-hierarchical-average-linkage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="new_heart_disease_files/figure-html/fig-clustering-hierarchical-average-linkage-1.png" class="img-fluid figure-img" width="1440">
@@ -3226,8 +3200,7 @@ Figure&nbsp;20: Hierarchical clustering using average linkage method.
 </div>
 </div>
 </div>
-<p>The dendrogram by average linkage looks highly unbalanced clustered. This indicates that choosing the right linkage method for the dataset is crucial for clustering analysis.</p>
-<p>To examine the composition of clusters and identify predominant variables or characteristics in each cluster for the hierarchical clustering results, we assign these cluster labels back to the original data, and summarize the data by cluster to understand the mean or median values of each variable within each cluster.</p>
+<p>Subsequent to the hierarchical clustering process, cluster labels were reassigned to the original dataset to facilitate analysis of cluster composition. The dataset was summarized by cluster to gain insights into the mean or standard deviation values of each variable within each cluster.</p>
 <div class="cell" data-tbl-cap-location="bottom">
 <div id="tbl-average-of-vars-for-hcluster-round1" class="cell anchored" data-tbl-cap-location="bottom">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -3740,12 +3713,11 @@ Table&nbsp;12: The mean of numerical values in each cluster of round.
 </figure>
 </div>
 </div>
-<p>In cluster one, mean values for all metrics except maximum heart rate are higher. This clustering suggests that patients in group one might have heart disease or be at a higher risk, while those in cluster two are less likely to have the disease due to lower cholesterol and resting blood pressure, among other factors. However, despite these patterns, individual variability necessitates further examination for accurate assessment.</p>
-<div style="page-break-after: always;"></div>
+<p>In the application of Hierarchical clustering using the Ward method, it was noted that the first cluster demonstrated higher mean values across all metrics, with the exception of maximum heart rate. This clustering pattern implies that patients in cluster one may have a higher likelihood of heart disease or being at an elevated risk, whereas those in cluster two tend to have lower cholesterol and resting blood pressure, among other factors, suggesting a potentially lower risk. However, it’s important to note that individual variability exists, warranting a more in-depth examination for accurate assessment.</p>
 </section>
 </section>
-<section id="conclusion-1" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion-1">Conclusion</h2>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>Our comprehensive analysis of heart disease data, utilizing a blend of machine learning techniques, has provided valuable insights into the diagnosis and clustering of heart disease patients. The application of the K-Nearest Neighbors (KNN) classification algorithm yielded a commendable accuracy of 84.44%. Further refinement through a 10-fold cross-validation process identified the optimal number of neighbors (k = 13) to enhance the model’s performance, achieving an accuracy of 86.44% and a Kappa statistic of 0.7221. These results underscore the effectiveness of KNN in distinguishing between patients with and without heart disease.</p>
 <p>In exploring patient clustering, we conducted two rounds of K-means clustering with the primary variation being the “nstart” parameter in the second round. The optimal number of clusters (k = 2) was determined through the elbow and silhouette methods. The consistency between the two rounds of clustering was notable, albeit with some variations in cluster sizes. The visualization of these clusters through Principal Component Analysis (PCA) offered a clear and interpretable two-dimensional representation of the patient groupings.</p>
 <p>Our investigation further extended to hierarchical clustering using both Ward and Complete linkage methods. The Complete linkage method resulted in unbalanced clusters, suggesting a sensitivity to certain data characteristics. In contrast, the Ward method yielded more insightful clusters. Specifically, patients in cluster one displayed consistently higher mean values across most measured variables, with the exception of maximum heart rate. This distinction potentially indicates a subgroup of patients with more severe manifestations of heart disease.</p>
