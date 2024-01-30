@@ -923,7 +923,7 @@ accuracy <- round((sum(diag(confusionMatrix)) / sum(confusionMatrix))*100,2)
 print(paste("The accuracy of the model is:", accuracy))
 ```
 
-##### Visualizing  the Results
+##### Visualizing the Results
 
 ```{r}
 #| label: fig-knn-modelpred-vs-actual
