@@ -1,6 +1,5 @@
 ---
 title: "Clustering of Patients with Heart Disease"
-subtitle: "Capstone Project, M.S. in Data Analysis and Visualization "
 author: "Mukadder Cinar, CUNY, Graduate Center"
 format: html
 standalone: true
@@ -1267,7 +1266,7 @@ cvd_Clustered_categorical <- cvd_patients_clustered |>
 ```{r}
 #| code-fold: true
 #| label: tbl-cluster-round2-freqTable
-#| tbl-cap: Frequency distribution of categorical variables based on K-means round-2 clusters.
+#| tbl-cap: Frequency Distribution of Categorical Variables Based on K-means Round-2 Clusters.
 #| tbl-cap-location: top
 
 
@@ -1292,8 +1291,8 @@ head(frequency_distributions)
 
 ```{r}
 #| label: fig-cluster-heartD-sex-round2
-#| fig-cap: Heart Disease and sex distribution in round-2 clusters.
-#| fig-cap-location: bottom 
+#| fig-cap: Heart Disease and Sex Distribution in Round-2 Clusters.
+#| fig-cap-location: top
 
 
 
@@ -1336,8 +1335,8 @@ ggplot(fd_part1, aes(x = value, y = frequency, fill = factor(cluster_round2))) +
 
 ```{r}
 #| label: fig-cluster-chestP-slope-round2
-#| fig-cap: Distribution of chest pain and slope based on the round-2 clusters.
-#| fig-cap-location: bottom
+#| fig-cap: Distribution of Chest Pain and Slope Based on the Round-2 Clusters.
+#| fig-cap-location: top
 #| code-fold: true
 
 # Plot for the second part (variables 3 and 4)
@@ -1353,8 +1352,8 @@ ggplot(fd_part2, aes(x = value, y = frequency, fill = factor(cluster_round2))) +
 
 ```{r}
 #| label: fig-cluster-exerAngina-fastingBS-round2
-#| fig-cap: Distribution of exercise-induced angina and fasting blood sugar on the roun-2 clusters.
-#| fig-cap-location: bottom
+#| fig-cap: Distribution of Exercise-induced angina and Fasting Blood Sugar on the Round-2 Clusters.
+#| fig-cap-location: top
 #| code-fold: true
 
 # Plot for the first part (variables 1 and 2)
@@ -1369,8 +1368,8 @@ ggplot(fd_part3, aes(x = value, y = frequency, fill = factor(cluster_round2))) +
 
 ```{r}
 #| label: fig-cluster-majorVessels-thalassemia-round2
-#| fig-cap: Distribution of major vessels and thalassemia on the round-2 clusters.
-#| fig-cap-location: bottom
+#| fig-cap: Distribution of Major Vessels and Thalassemia on the Round-2 Clusters.
+#| fig-cap-location: top
 #| code-fold: true
 #
 # Plot for the first part (variables 1 and 2)
@@ -1736,10 +1735,10 @@ In the application of Hierarchical clustering using the Ward method, it was note
 
 ## Conclusion
 
-Our comprehensive analysis of heart disease data, utilizing a blend of machine learning techniques, has provided valuable insights into the diagnosis and clustering of heart disease patients. The application of the K-Nearest Neighbors (KNN) classification algorithm yielded a commendable accuracy of 84.44%. Further refinement through a 10-fold cross-validation process identified the optimal number of neighbors (k = 13) to enhance the model's performance, achieving an accuracy of 86.44% and a Kappa statistic of 0.7221. These results underscore the effectiveness of KNN in distinguishing between patients with and without heart disease.
+The comprehensive analysis of heart disease data, utilizing a blend of machine learning techniques, has provided valuable insights into the diagnosis and clustering of heart disease patients. The application of the K-Nearest Neighbors (KNN) classification algorithm yielded a commendable accuracy of 84.44%. Further refinement through a 10-fold cross-validation process identified the optimal number of neighbors (k = 13) to enhance the model's performance, achieving an accuracy of 86.44% and a Kappa statistic of 0.7221. These results underscore the effectiveness of KNN in distinguishing between patients with and without heart disease.
 
-In exploring patient clustering, we conducted two rounds of K-means clustering with the primary variation being the "nstart" parameter in the second round. The optimal number of clusters (k = 2) was determined through the elbow and silhouette methods. The consistency between the two rounds of clustering was notable, albeit with some variations in cluster sizes. The visualization of these clusters through Principal Component Analysis (PCA) offered a clear and interpretable two-dimensional representation of the patient groupings.
+In exploring patient clustering, two rounds of K-means clustering were conducted with the primary variation being the "nstart" parameter in the second round. The optimal number of clusters (k = 2) was determined through the elbow and silhouette methods. The consistency between the two rounds of clustering was notable, albeit with some variations in cluster sizes. The visualization of these clusters through Principal Component Analysis (PCA) offered a clear and interpretable two-dimensional representation of the patient groupings.
 
-Our investigation further extended to hierarchical clustering using both Ward and Complete linkage methods. The Complete linkage method resulted in unbalanced clusters, suggesting a sensitivity to certain data characteristics. In contrast, the Ward method yielded more insightful clusters. Specifically, patients in cluster one displayed consistently higher mean values across most measured variables, with the exception of maximum heart rate. This distinction potentially indicates a subgroup of patients with more severe manifestations of heart disease.
+The investigation further extended to hierarchical clustering using both Ward and Complete linkage methods. The Complete linkage method resulted in unbalanced clusters, suggesting a sensitivity to certain data characteristics. In contrast, the Ward method yielded more insightful clusters. Specifically, patients in cluster one displayed consistently higher mean values across most measured variables, with the exception of maximum heart rate. This distinction potentially indicates a subgroup of patients with more severe manifestations of heart disease.
 
-Overall, our multi-faceted approach to analyzing heart disease data --- encompassing KNN classification, K-means clustering, and hierarchical clustering --- has not only affirmed the utility of these methods in medical data analysis but also highlighted the nuanced nature of heart disease presentation. The insights gleaned from this study could be instrumental in guiding targeted diagnostic and treatment strategies, ultimately contributing to improved healthcare outcomes for heart disease patients.
+Overall, the multi-faceted approach to analyzing heart disease data --- encompassing KNN classification, K-means clustering, and hierarchical clustering --- has not only affirmed the utility of these methods in medical data analysis but also highlighted the nuanced nature of heart disease presentation. The insights gleaned from this study could be instrumental in guiding targeted diagnostic and treatment strategies, ultimately contributing to improved healthcare outcomes for heart disease patients.
