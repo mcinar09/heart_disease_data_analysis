@@ -23,19 +23,17 @@ In this project, we are analyzing heart disease data obtained from UCI Machine L
 
 4.  **Hierarchical Clustering**: Finally, we use hierarchical clustering. This method also groups patients but in a way that shows us a hierarchy, from very broad groups down to more specific ones.
 
-Through this analysis, we aim to provide insightful categorizations of patients based on their heart disease data, offering a potential pathway for personalized medicine and targeted healthcare interventions. This project not only underscores the power of machine learning in healthcare analytics but also highlights the importance of methodical data exploration in deriving meaningful conclusions from complex medical datasets.
+The analysis sought to provide insightful categorizations of patients based on their heart disease data, potentially paving the way for personalized medicine and targeted healthcare interventions. The project underscored the efficacy of machine learning in healthcare analytics and emphasized the significance of systematic data exploration in deriving meaningful conclusions from complex medical datasets.
 
 ## Methodology
 
-In this study, we have employed a systematic approach to analyze cardiovascular disease (CVD) data, leveraging a blend of machine learning techniques to unravel the complexities associated with heart disease diagnosis and patient management. Our methodology is structured to not only identify inherent patterns within the dataset but also to enhance the precision and applicability of our findings in clinical settings.
+In this study, a systematic approach to analyze cardiovascular disease (CVD) data was applied, leveraging a blend of machine learning techniques to unravel the complexities associated with heart disease diagnosis and patient management. The methodology was structured to not only identify inherent patterns within the dataset but also to enhance the precision and applicability of the findings in clinical settings.
 
-Initially, we utilized the K-Nearest Neighbors (KNN) classification algorithm, a method renowned for its efficacy in pattern recognition within medical datasets. This was followed by an in-depth analysis using K-means clustering, conducted in two distinct rounds to assess the stability and reliability of the identified clusters. The first round of K-means clustering provided a baseline for patient groupings, while the second round, involving an adjustment in the "nstart" parameter, served to test the consistency of these groupings.
+Initially, the K-Nearest Neighbors (KNN) classification algorithm was utilized, a method renowned for its efficacy in pattern recognition within medical datasets. This was followed by an in-depth analysis using K-means clustering, conducted in two distinct rounds to assess the stability and reliability of the identified clusters. The first round of K-means clustering provided a baseline for patient groupings, while the second round, involving an adjustment in the “nstart” parameter, served to test the consistency of these groupings.
 
-Further enriching our analysis, Principal Component Analysis (PCA) was implemented to visualize the clusters in a reduced-dimensional space, thereby offering a clearer understanding of the data's structure. Lastly, hierarchical clustering, executed via both Ward and Complete linkage methods, was applied to explore and validate the data's inherent groupings at different levels of granularity.
+Further enriching the analysis, Principal Component Analysis (PCA) was implemented to visualize the clusters in a reduced-dimensional space, thereby offering a clearer understanding of the data’s structure. Lastly, hierarchical clustering, executed via both Ward and Complete linkage methods, was applied to explore and validate the data’s inherent groupings at different levels of granularity.
 
-The comprehensive nature of this methodology, encompassing both classification and clustering techniques, is designed to yield insights that are robust, nuanced, and directly applicable to the improvement of cardiovascular health outcomes.
-
-### 
+The comprehensive nature of this methodology, encompassing both classification and clustering techniques, was designed to yield insights that are robust, nuanced, and directly applicable to the improvement of cardiovascular health outcomes.
 
 ### Data Collection and Management
 
@@ -916,7 +914,7 @@ print(confusionMatrix)
 
 ```
 
-Evaluation of the Model
+##### Evaluation of the Model
 
 ```{r}
 #| label: evaluation-knn-rounds
@@ -926,7 +924,7 @@ accuracy <- round((sum(diag(confusionMatrix)) / sum(confusionMatrix))*100,2)
 print(paste("The accuracy of the model is:", accuracy))
 ```
 
-Visualizing the Results
+##### Visualizing  the Results
 
 ```{r}
 #| label: fig-knn-modelpred-vs-actual
@@ -1152,7 +1150,7 @@ cont_table <- table(Round1 = cvd_patients_clustered$cluster_round1, Round2 = cvd
 | Cluster 1 | **51**    | 67        |
 | Cluster 2 | 60        | **125**   |
 
-Interpreting the Contingency Table:
+##### Interpreting the Contingency Table:
 
 • If many patients from a cluster in Round 1 are in the same cluster in Round 2, this suggests consistency.
 
@@ -1211,7 +1209,7 @@ combined_stats|>
   gt()
 ```
 
-It can be observed that in cluster 1, the averages for age, resting blood pressure, cholesterol levels, resting electrocardiographic readings, and oldpeak are higher, whereas the average maximum heart rate is lower.
+It's observed that in cluster 1, the averages for age, resting blood pressure, cholesterol levels, resting electrocardiographic readings, and oldpeak are higher, whereas the average maximum heart rate is lower.
 
 Statistics for Round 2 Clustering:
 
@@ -1241,6 +1239,8 @@ combined_stats2 <- rbind(cluster_means, cluster_sd)
 combined_stats2|>
   gt()
 ```
+
+Within Cluster 1, the analysis revealed that mean values for age, resting blood pressure, cholesterol levels, resting electrocardiographic readings, and oldpeak were elevated. Conversely, the average maximum heart rate was observed to be lower in comparison both rounds of clustering.
 
 ### Frequency Distribution of Categorical Variables for Each Cluster of round-2
 
@@ -1490,7 +1490,7 @@ Through the PCA loadings and subsequent cluster visualization, insights into the
 
 In summary, the analysis of the heart disease dataset using k-means clustering with two clusters, demonstrated moderate consistency in patient groupings across two rounds of clustering. While a significant portion of patients were grouped into the same cluster in both rounds, indicating potentially meaningful groupings, there was also notable movement between clusters. This suggests that while there may be some stable patterns in the data, there is also a degree of variability in how patients are grouped. These findings highlight the importance of considering multiple rounds of clustering and possibly exploring additional clustering methods or incorporating more domain-specific knowledge for a comprehensive understanding of patient categorizations.
 
-**Hierarchical Clustering**
+### **Hierarchical Clustering**
 
 Hierarchical clustering is a method of cluster analysis that seeks to build a hierarchy of clusters. It is a widely used and effective approach in data analysis for grouping data points into a tree-like structure based on their similarity [@hierarch]. Hierarchical clustering involves creating a hierarchy of clusters, which is typically visualized in a dendrogram.
 
